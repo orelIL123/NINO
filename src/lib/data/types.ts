@@ -16,7 +16,7 @@ export interface Category {
   slug: string;
   title: Localized;
   /** Top level group the category belongs to (used for the mega menu). */
-  group: "new" | "women" | "men" | "shoes" | "accessories" | "sale";
+  group: "new" | "clothing" | "shoes" | "accessories" | "sale";
   gender: Gender;
   image?: string;
   /** Featured in "shop by category" tiles on the home page. */

@@ -114,8 +114,7 @@ export function groupTitle(group: Category["group"], locale: Locale) {
   const dict = getDictionary(locale);
   const map: Record<Category["group"], string> = {
     new: dict.nav.new,
-    women: dict.nav.women,
-    men: dict.nav.men,
+    clothing: dict.nav.clothing,
     shoes: dict.nav.shoes,
     accessories: dict.nav.accessories,
     sale: dict.nav.sale,

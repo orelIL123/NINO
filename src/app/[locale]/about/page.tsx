@@ -20,13 +20,13 @@ export async function generateMetadata({
 
 const copy = {
   he: [
-    "NINO הוא בוטיק אופנה בנתיבות. התחלנו בחנות אחת, עם רעיון פשוט: להביא לעיר מותגים שאי אפשר למצוא בכל מקום, ולתת לאנשים יחס אישי בזמן שהם בוחרים.",
-    "כל קולקציה נבחרת אצלנו פריט-פריט. אנחנו מחפשים גזרות שנשארות יפות אחרי עשר כביסות, בדים שנעימים באמת, וצבעוניות שמסתדרת עם מה שכבר יש לכם בארון.",
+    "NINO הוא בוטיק אופנה לגברים בנתיבות. התחלנו בחנות אחת, עם רעיון פשוט: להביא לעיר מותגים שאי אפשר למצוא בכל מקום, ולתת לאנשים יחס אישי בזמן שהם בוחרים.",
+    "כל קולקציה נבחרת אצלנו פריט-פריט — ביגוד, נעליים ואקססוריז. אנחנו מחפשים גזרות שנשארות יפות אחרי עשר כביסות, בדים שנעימים באמת, וצבעוניות שמסתדרת עם מה שכבר יש לכם בארון.",
     "האתר הוא המשך של אותו רעיון: מה שיש בחנות — נמצא גם כאן. אפשר להזמין הביתה, ואפשר להזמין ולאסוף מאיתנו, ואם יש התלבטות במידה, אנחנו במרחק הודעה.",
   ],
   en: [
-    "NINO is a fashion boutique in Netivot. We started with one store and a simple idea: bring labels to town that you can't find everywhere, and give people real attention while they choose.",
-    "Every collection is picked piece by piece. We look for cuts that still look good after ten washes, fabrics that actually feel good, and colours that work with what's already in your wardrobe.",
+    "NINO is a menswear boutique in Netivot. We started with one store and a simple idea: bring labels to town that you can't find everywhere, and give people real attention while they choose.",
+    "Every collection is picked piece by piece — clothing, footwear and accessories. We look for cuts that still look good after ten washes, fabrics that actually feel good, and colours that work with what's already in your wardrobe.",
     "This site is the same idea, extended: what's in the store is here too. Order to your door, or order and collect from us — and if you're torn between two sizes, we're one message away.",
   ],
 };

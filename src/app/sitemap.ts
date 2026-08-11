@@ -13,8 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const paths = [
     "",
-    "/women",
-    "/men",
+    "/clothing",
     "/shoes",
     "/accessories",
     "/sale",

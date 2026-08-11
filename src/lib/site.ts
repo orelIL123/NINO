@@ -1,4 +1,9 @@
-/** Single place for the boutique's real-world details. Edit these once. */
+/**
+ * Single place for the boutique's real-world details.
+ *
+ * TODO — replace the placeholders below with the real ones before going live:
+ * phone, whatsapp (international format, no +), email, street address.
+ */
 export const SITE = {
   name: "NINO",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://nino-boutique.co.il",

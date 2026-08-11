@@ -75,49 +75,15 @@ export default function Header({
         href: href("/category/new-in"),
       },
       {
-        key: "women",
-        label: dict.nav.women,
-        href: href("/women"),
-        columns: [
-          { title: dict.nav.women, links: inGroup("women") },
-          {
-            title: dict.nav.shoes,
-            links: categories
-              .filter((c) => c.group === "shoes" && c.gender !== "men")
-              .map((c) => ({
-                label: c.title[locale],
-                href: href(`/category/${c.slug}`),
-              })),
-          },
-        ],
+        key: "clothing",
+        label: dict.nav.clothing,
+        href: href("/clothing"),
+        columns: [{ title: dict.nav.clothing, links: inGroup("clothing") }],
         promo: {
           title: dict.home.editorialTitle,
-          text: dict.home.forHer,
-          href: href("/women"),
-          image: "/media/editorial-3.svg",
-        },
-      },
-      {
-        key: "men",
-        label: dict.nav.men,
-        href: href("/men"),
-        columns: [
-          { title: dict.nav.men, links: inGroup("men") },
-          {
-            title: dict.nav.shoes,
-            links: categories
-              .filter((c) => c.group === "shoes" && c.gender !== "women")
-              .map((c) => ({
-                label: c.title[locale],
-                href: href(`/category/${c.slug}`),
-              })),
-          },
-        ],
-        promo: {
-          title: dict.home.editorialTitle,
-          text: dict.home.forHim,
-          href: href("/men"),
-          image: "/media/editorial-2.svg",
+          text: dict.home.panelClothing,
+          href: href("/clothing"),
+          image: "/media/editorial-1.svg",
         },
       },
       {
@@ -125,6 +91,12 @@ export default function Header({
         label: dict.nav.shoes,
         href: href("/shoes"),
         columns: [{ title: dict.nav.shoes, links: inGroup("shoes") }],
+        promo: {
+          title: dict.home.editorialTitle,
+          text: dict.home.panelShoes,
+          href: href("/shoes"),
+          image: "/media/editorial-2.svg",
+        },
       },
       {
         key: "accessories",

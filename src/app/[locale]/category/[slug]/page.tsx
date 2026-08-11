@@ -48,8 +48,7 @@ export default async function CategoryPage({
   const dict = getDictionary(locale);
   const groupLabel = {
     new: dict.nav.new,
-    women: dict.nav.women,
-    men: dict.nav.men,
+    clothing: dict.nav.clothing,
     shoes: dict.nav.shoes,
     accessories: dict.nav.accessories,
     sale: dict.nav.sale,

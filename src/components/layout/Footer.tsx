@@ -21,8 +21,7 @@ export default function Footer() {
       title: dict.footer.shop,
       links: [
         { label: dict.nav.new, href: href("/category/new-in") },
-        { label: dict.nav.women, href: href("/women") },
-        { label: dict.nav.men, href: href("/men") },
+        { label: dict.nav.clothing, href: href("/clothing") },
         { label: dict.nav.shoes, href: href("/shoes") },
         { label: dict.nav.accessories, href: href("/accessories") },
         { label: dict.nav.sale, href: href("/sale") },

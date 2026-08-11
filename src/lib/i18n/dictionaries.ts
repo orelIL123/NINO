@@ -3,9 +3,9 @@ import type { Locale } from "./config";
 const he = {
   meta: {
     siteName: "NINO",
-    tagline: "בוטיק אופנה · נתיבות",
+    tagline: "בוטיק אופנה לגברים · נתיבות",
     description:
-      "NINO — בוטיק אופנה בנתיבות. מותגי אופנה נבחרים לנשים ולגברים, קולקציות עונתיות ושירות אישי.",
+      "NINO — בוטיק אופנה לגברים בנתיבות. ביגוד ונעליים ממותגים נבחרים, קולקציות עונתיות ושירות אישי.",
   },
   announcement: {
     shipping: "משלוח חינם בקנייה מעל ₪400",
@@ -14,8 +14,7 @@ const he = {
   },
   nav: {
     new: "חדש",
-    women: "נשים",
-    men: "גברים",
+    clothing: "ביגוד",
     shoes: "נעליים",
     accessories: "אקססוריז",
     brands: "מותגים",
@@ -36,17 +35,17 @@ const he = {
   home: {
     heroEyebrow: "קולקציית העונה",
     heroCountSuffix: "פריטים חדשים",
-    heroLine1: "מותגי אופנה נבחרים",
-    heroLine2: "לנשים ולגברים",
+    heroLine1: "ביגוד ונעליים",
+    heroLine2: "ממותגים נבחרים",
     heroLine3: "נחתו השבוע בבוטיק",
     shopNow: "לרכישה",
     newIn: "חדש באתר",
     trending: "הכי נמכרים",
-    forHer: "לה",
-    forHim: "לו",
+    panelClothing: "הביגוד",
+    panelShoes: "הנעליים",
     editorialTitle: "העונה החדשה",
     editorialText:
-      "גזרות נקיות, בדים נעימים וצבעוניות רגועה. הקולקציה שנבחרה אחת-אחת עבור הבוטיק בנתיבות.",
+      "גזרות נקיות, בדים נעימים וצבעוניות רגועה. הקולקציה שנבחרה פריט-פריט עבור הבוטיק בנתיבות.",
     categoriesTitle: "קנו לפי קטגוריה",
     brandsTitle: "המותגים שלנו",
     saleTitle: "מבצעי סוף עונה",
@@ -204,9 +203,9 @@ const he = {
 const en: typeof he = {
   meta: {
     siteName: "NINO",
-    tagline: "Fashion Boutique · Netivot",
+    tagline: "Menswear Boutique · Netivot",
     description:
-      "NINO — a fashion boutique in Netivot. Curated labels for women and men, seasonal collections and personal service.",
+      "NINO — a men's fashion boutique in Netivot. Curated clothing and footwear, seasonal collections and personal service.",
   },
   announcement: {
     shipping: "Free shipping on orders over ₪400",
@@ -215,8 +214,7 @@ const en: typeof he = {
   },
   nav: {
     new: "NEW",
-    women: "WOMEN",
-    men: "MEN",
+    clothing: "CLOTHING",
     shoes: "SHOES",
     accessories: "ACCESSORIES",
     brands: "BRANDS",
@@ -237,14 +235,14 @@ const en: typeof he = {
   home: {
     heroEyebrow: "This season",
     heroCountSuffix: "New Items",
-    heroLine1: "Curated fashion labels",
-    heroLine2: "for women and men",
+    heroLine1: "Curated clothing",
+    heroLine2: "and footwear",
     heroLine3: "landed this week",
     shopNow: "SHOP NOW",
     newIn: "New in",
     trending: "Best sellers",
-    forHer: "For her",
-    forHim: "For him",
+    panelClothing: "Clothing",
+    panelShoes: "Footwear",
     editorialTitle: "The new season",
     editorialText:
       "Clean cuts, soft fabrics and a calm palette. Hand-picked, piece by piece, for the boutique in Netivot.",

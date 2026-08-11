@@ -1,7 +1,7 @@
 import type { Brand, Category, Product, ProductSize } from "./types";
 
 /* -------------------------------------------------------------------------- */
-/*  DEMO CATALOG                                                              */
+/*  DEMO CATALOG — men's fashion & footwear                                    */
 /*                                                                            */
 /*  Everything below is placeholder data so the storefront is fully browsable  */
 /*  before the real inventory exists. When Firestore is ready, the functions   */
@@ -10,9 +10,9 @@ import type { Brand, Category, Product, ProductSize } from "./types";
 /* -------------------------------------------------------------------------- */
 
 export const brands: Brand[] = [
-  { slug: "alma", name: "ALMA", country: { he: "תל אביב", en: "Tel Aviv" }, description: { he: "בייסיקים מוקפדים בגזרות רחבות ובדים טבעיים.", en: "Considered basics in relaxed cuts and natural fabrics." } },
-  { slug: "maison-noir", name: "MAISON NOIR", country: { he: "פריז", en: "Paris" }, description: { he: "מינימליזם פריזאי עם קו מונוכרומטי.", en: "Parisian minimalism with a monochrome line." } },
-  { slug: "terra", name: "TERRA", country: { he: "ברצלונה", en: "Barcelona" }, description: { he: "גוונים חמים, כותנה אורגנית וסריגים.", en: "Warm tones, organic cotton and knitwear." } },
+  { slug: "alma", name: "ALMA", country: { he: "תל אביב", en: "Tel Aviv" }, description: { he: "בייסיקים מוקפדים בגזרות רגועות ובדים טבעיים.", en: "Considered basics in relaxed cuts and natural fabrics." } },
+  { slug: "maison-noir", name: "MAISON NOIR", country: { he: "פריז", en: "Paris" }, description: { he: "מינימליזם פריזאי בקו מונוכרומטי.", en: "Parisian minimalism in a monochrome line." } },
+  { slug: "terra", name: "TERRA", country: { he: "ברצלונה", en: "Barcelona" }, description: { he: "גוונים חמים, כותנה אורגנית ופשתן.", en: "Warm tones, organic cotton and linen." } },
   { slug: "lune", name: "LUNE", country: { he: "קופנהגן", en: "Copenhagen" }, description: { he: "אופנה סקנדינבית שקטה ליום-יום.", en: "Quiet Scandinavian everyday fashion." } },
   { slug: "atelier-nine", name: "ATELIER NINE", country: { he: "מילאנו", en: "Milan" }, description: { he: "טיילורינג איטלקי בגימור נקי.", en: "Italian tailoring with a clean finish." } },
   { slug: "nord", name: "NORD", country: { he: "סטוקהולם", en: "Stockholm" }, description: { he: "מעילים וסריגים לעונה הקרה.", en: "Outerwear and knits for the cold season." } },
@@ -23,31 +23,26 @@ export const brands: Brand[] = [
 ];
 
 export const categories: Category[] = [
-  { slug: "new-in", title: { he: "חדש באתר", en: "New in" }, group: "new", gender: "unisex", image: "/media/editorial-1.svg" },
+  { slug: "new-in", title: { he: "חדש באתר", en: "New in" }, group: "new", gender: "men", image: "/media/editorial-1.svg" },
 
-  { slug: "dresses", title: { he: "שמלות", en: "Dresses" }, group: "women", gender: "women", image: "/media/editorial-3.svg", featured: true },
-  { slug: "tops", title: { he: "חולצות וטופים", en: "Tops & shirts" }, group: "women", gender: "women", featured: true },
-  { slug: "knitwear-women", title: { he: "סריגים", en: "Knitwear" }, group: "women", gender: "women" },
-  { slug: "pants-women", title: { he: "מכנסיים", en: "Trousers" }, group: "women", gender: "women" },
-  { slug: "skirts", title: { he: "חצאיות", en: "Skirts" }, group: "women", gender: "women" },
-  { slug: "outerwear-women", title: { he: "מעילים וג׳קטים", en: "Coats & jackets" }, group: "women", gender: "women" },
+  { slug: "tshirts", title: { he: "טי-שירט", en: "T-shirts" }, group: "clothing", gender: "men", featured: true },
+  { slug: "shirts", title: { he: "חולצות מכופתרות", en: "Shirts" }, group: "clothing", gender: "men" },
+  { slug: "knitwear", title: { he: "סריגים", en: "Knitwear" }, group: "clothing", gender: "men" },
+  { slug: "hoodies", title: { he: "קפוצ׳ונים וסווטשירטים", en: "Hoodies & sweats" }, group: "clothing", gender: "men" },
+  { slug: "pants", title: { he: "מכנסיים", en: "Trousers" }, group: "clothing", gender: "men", featured: true },
+  { slug: "jeans", title: { he: "ג׳ינס", en: "Jeans" }, group: "clothing", gender: "men" },
+  { slug: "shorts", title: { he: "מכנסיים קצרים", en: "Shorts" }, group: "clothing", gender: "men" },
+  { slug: "outerwear", title: { he: "ג׳קטים ומעילים", en: "Jackets & coats" }, group: "clothing", gender: "men" },
 
-  { slug: "tshirts", title: { he: "טי-שירט", en: "T-shirts" }, group: "men", gender: "men", featured: true },
-  { slug: "shirts", title: { he: "חולצות מכופתרות", en: "Shirts" }, group: "men", gender: "men" },
-  { slug: "knitwear-men", title: { he: "סריגים", en: "Knitwear" }, group: "men", gender: "men" },
-  { slug: "pants-men", title: { he: "מכנסיים", en: "Trousers" }, group: "men", gender: "men" },
-  { slug: "shorts", title: { he: "מכנסיים קצרים", en: "Shorts" }, group: "men", gender: "men" },
-  { slug: "outerwear-men", title: { he: "ג׳קטים", en: "Jackets" }, group: "men", gender: "men" },
+  { slug: "sneakers", title: { he: "סניקרס", en: "Sneakers" }, group: "shoes", gender: "men", image: "/media/editorial-2.svg", featured: true },
+  { slug: "boots", title: { he: "מגפיים ובוטים", en: "Boots" }, group: "shoes", gender: "men" },
+  { slug: "sandals", title: { he: "סנדלים וכפכפים", en: "Sandals & slides" }, group: "shoes", gender: "men" },
 
-  { slug: "sneakers", title: { he: "סניקרס", en: "Sneakers" }, group: "shoes", gender: "unisex", image: "/media/editorial-2.svg", featured: true },
-  { slug: "boots", title: { he: "מגפיים", en: "Boots" }, group: "shoes", gender: "unisex" },
-  { slug: "heels", title: { he: "עקבים", en: "Heels" }, group: "shoes", gender: "women" },
-
-  { slug: "bags", title: { he: "תיקים", en: "Bags" }, group: "accessories", gender: "unisex", featured: true },
-  { slug: "hats", title: { he: "כובעים", en: "Hats" }, group: "accessories", gender: "unisex" },
-  { slug: "sunglasses", title: { he: "משקפי שמש", en: "Sunglasses" }, group: "accessories", gender: "unisex" },
-  { slug: "belts", title: { he: "חגורות", en: "Belts" }, group: "accessories", gender: "unisex" },
-  { slug: "scarves", title: { he: "צעיפים", en: "Scarves" }, group: "accessories", gender: "unisex" },
+  { slug: "bags", title: { he: "תיקים", en: "Bags" }, group: "accessories", gender: "men", featured: true },
+  { slug: "hats", title: { he: "כובעים", en: "Hats" }, group: "accessories", gender: "men" },
+  { slug: "belts", title: { he: "חגורות", en: "Belts" }, group: "accessories", gender: "men" },
+  { slug: "sunglasses", title: { he: "משקפי שמש", en: "Sunglasses" }, group: "accessories", gender: "men" },
+  { slug: "scarves", title: { he: "צעיפים", en: "Scarves" }, group: "accessories", gender: "men" },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -68,13 +63,11 @@ const colors = {
   sky: { hex: "#a9c3d9", he: "תכלת", en: "Sky" },
   red: { hex: "#9b2c2c", he: "אדום", en: "Red" },
   burgundy: { hex: "#5e2130", he: "בורדו", en: "Burgundy" },
-  pink: { hex: "#e2b9bd", he: "ורוד", en: "Pink" },
-  blush: { hex: "#f0d9d6", he: "ורוד עתיק", en: "Blush" },
-  lilac: { hex: "#b3a6c9", he: "לילך", en: "Lilac" },
   grey: { hex: "#8f8f8f", he: "אפור", en: "Grey" },
   charcoal: { hex: "#3a3a3a", he: "אפור פחם", en: "Charcoal" },
   mustard: { hex: "#c8a02c", he: "חרדל", en: "Mustard" },
   terracotta: { hex: "#b56a4a", he: "טרקוטה", en: "Terracotta" },
+  stone: { hex: "#b7b2a8", he: "אבן", en: "Stone" },
 } as const;
 
 export type ColorKey = keyof typeof colors;
@@ -85,12 +78,9 @@ export const colorList = Object.entries(colors).map(([key, v]) => ({
 }));
 
 const sizeSets = {
-  apparel: ["XS", "S", "M", "L", "XL"],
-  apparelMen: ["S", "M", "L", "XL", "XXL"],
-  numeric: ["34", "36", "38", "40", "42"],
-  numericMen: ["29", "30", "32", "34", "36"],
-  shoesW: ["36", "37", "38", "39", "40"],
-  shoesM: ["40", "41", "42", "43", "44", "45"],
+  apparel: ["S", "M", "L", "XL", "XXL"],
+  waist: ["29", "30", "31", "32", "34", "36"],
+  shoes: ["40", "41", "42", "43", "44", "45"],
   one: ["ONE SIZE"],
 } as const;
 
@@ -118,66 +108,102 @@ type Row = [
 ];
 
 const rows: Row[] = [
-  // --- WOMEN -------------------------------------------------------------
-  ["mila-midi-dress", "שמלת מידי מילה", "Mila Midi Dress", "lune", "dresses", "dress", 429, 0, "cream", "apparel", "new,bestseller"],
-  ["mila-midi-dress-black", "שמלת מידי מילה", "Mila Midi Dress", "lune", "dresses", "dress", 429, 0, "black", "apparel", "new"],
-  ["noa-slip-dress", "שמלת סאטן נועה", "Noa Slip Dress", "maison-noir", "dresses", "dress", 519, 649, "burgundy", "apparel", ""],
-  ["rina-linen-dress", "שמלת פשתן רינה", "Rina Linen Dress", "terra", "dresses", "dress", 389, 0, "sand", "apparel", "bestseller"],
-  ["ella-shirt-dress", "שמלת חולצה אלה", "Ella Shirt Dress", "alma", "dresses", "shirt", 349, 449, "sky", "apparel", ""],
-  ["yara-poplin-top", "טופ פופלין יערה", "Yara Poplin Top", "alma", "tops", "shirt", 219, 0, "white", "apparel", "new"],
-  ["talia-silk-blouse", "בלוזת משי טליה", "Talia Silk Blouse", "maison-noir", "tops", "shirt", 379, 0, "blush", "apparel", ""],
-  ["maya-boxy-tee", "טי בוקסי מאיה", "Maya Boxy Tee", "olive-co", "tops", "tshirt", 129, 169, "black", "apparel", "bestseller"],
-  ["maya-boxy-tee-white", "טי בוקסי מאיה", "Maya Boxy Tee", "olive-co", "tops", "tshirt", 129, 169, "white", "apparel", ""],
-  ["shira-wool-knit", "סריג צמר שירה", "Shira Wool Knit", "nord", "knitwear-women", "knit", 459, 0, "ecru", "apparel", "new"],
-  ["dana-cardigan", "קרדיגן דנה", "Dana Cardigan", "terra", "knitwear-women", "knit", 399, 499, "camel", "apparel", ""],
-  ["orly-mohair-sweater", "סוודר מוהר אורלי", "Orly Mohair Sweater", "lune", "knitwear-women", "knit", 429, 0, "lilac", "apparel", ""],
-  ["gaia-wide-trouser", "מכנסי גאיה רחבים", "Gaia Wide Trouser", "atelier-nine", "pants-women", "pants", 449, 0, "charcoal", "numeric", "bestseller"],
-  ["gaia-wide-trouser-cream", "מכנסי גאיה רחבים", "Gaia Wide Trouser", "atelier-nine", "pants-women", "pants", 449, 0, "cream", "numeric", ""],
-  ["nili-straight-jeans", "ג׳ינס ישר נילי", "Nili Straight Jeans", "alma", "pants-women", "pants", 329, 429, "denim", "numeric", ""],
-  ["hila-satin-skirt", "חצאית סאטן הילה", "Hila Satin Skirt", "maison-noir", "skirts", "skirt", 359, 0, "forest", "numeric", "new"],
-  ["adi-pleated-skirt", "חצאית פליסה עדי", "Adi Pleated Skirt", "lune", "skirts", "skirt", 299, 379, "black", "numeric", ""],
-  ["sivan-trench", "טרנץ׳ סיוון", "Sivan Trench Coat", "nord", "outerwear-women", "coat", 899, 0, "sand", "apparel", "new,bestseller"],
-  ["romi-wool-coat", "מעיל צמר רומי", "Romi Wool Coat", "atelier-nine", "outerwear-women", "coat", 1190, 1490, "grey", "apparel", ""],
-  ["noya-crop-jacket", "ג׳קט קרופ נויה", "Noya Crop Jacket", "terra", "outerwear-women", "jacket", 549, 0, "terracotta", "apparel", ""],
+  // --- T-SHIRTS ----------------------------------------------------------
+  ["core-heavy-tee-white", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "white", "apparel", "new,bestseller"],
+  ["core-heavy-tee-black", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "black", "apparel", "new"],
+  ["core-heavy-tee-olive", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "olive", "apparel", ""],
+  ["core-heavy-tee-sand", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "sand", "apparel", ""],
+  ["ravid-pocket-tee", "טי כיס רביד", "Ravid Pocket Tee", "alma", "tshirts", "tshirt", 179, 229, "ecru", "apparel", ""],
+  ["shai-boxy-tee", "טי בוקסי שי", "Shai Boxy Tee", "alma", "tshirts", "tshirt", 169, 0, "charcoal", "apparel", "bestseller"],
+  ["lior-stripe-tee", "טי פסים ליאור", "Lior Striped Tee", "terra", "tshirts", "tshirt", 199, 259, "navy", "apparel", ""],
+  ["nino-logo-tee", "טי לוגו NINO", "NINO Logo Tee", "olive-co", "tshirts", "tshirt", 139, 0, "white", "apparel", "new"],
 
-  // --- MEN ---------------------------------------------------------------
-  ["core-heavy-tee", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "white", "apparelMen", "bestseller"],
-  ["core-heavy-tee-black", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "black", "apparelMen", ""],
-  ["core-heavy-tee-olive", "טי כבד CORE", "Core Heavy Tee", "olive-co", "tshirts", "tshirt", 149, 0, "olive", "apparelMen", ""],
-  ["ravid-pocket-tee", "טי כיס רביד", "Ravid Pocket Tee", "alma", "tshirts", "tshirt", 179, 229, "ecru", "apparelMen", ""],
-  ["idan-oxford-shirt", "חולצת אוקספורד עידן", "Idan Oxford Shirt", "atelier-nine", "shirts", "shirt", 389, 0, "sky", "apparelMen", "new"],
-  ["idan-oxford-shirt-white", "חולצת אוקספורד עידן", "Idan Oxford Shirt", "atelier-nine", "shirts", "shirt", 389, 0, "white", "apparelMen", ""],
-  ["tom-linen-shirt", "חולצת פשתן תום", "Tom Linen Shirt", "terra", "shirts", "shirt", 349, 429, "navy", "apparelMen", "bestseller"],
-  ["amit-merino-knit", "סריג מרינו עמית", "Amit Merino Knit", "nord", "knitwear-men", "knit", 499, 0, "charcoal", "apparelMen", "new"],
-  ["gil-cable-knit", "סריג קלוע גיל", "Gil Cable Knit", "nord", "knitwear-men", "knit", 529, 649, "cream", "apparelMen", ""],
-  ["eyal-chino", "צ׳ינו אייל", "Eyal Chino", "atelier-nine", "pants-men", "pants", 399, 0, "sand", "numericMen", "bestseller"],
-  ["eyal-chino-navy", "צ׳ינו אייל", "Eyal Chino", "atelier-nine", "pants-men", "pants", 399, 0, "navy", "numericMen", ""],
-  ["dor-relaxed-jeans", "ג׳ינס רלאקסד דור", "Dor Relaxed Jeans", "alma", "pants-men", "pants", 359, 459, "denim", "numericMen", ""],
-  ["yoav-sweat-shorts", "מכנס פוטר יואב", "Yoav Sweat Shorts", "olive-co", "shorts", "shorts", 189, 0, "grey", "apparelMen", "new"],
-  ["yoav-sweat-shorts-black", "מכנס פוטר יואב", "Yoav Sweat Shorts", "olive-co", "shorts", "shorts", 189, 0, "black", "apparelMen", ""],
-  ["ziv-swim-shorts", "מכנס ים זיו", "Ziv Swim Shorts", "velo", "shorts", "shorts", 229, 299, "forest", "apparelMen", ""],
-  ["ari-bomber", "בומבר ארי", "Ari Bomber Jacket", "velo", "outerwear-men", "jacket", 649, 0, "black", "apparelMen", "bestseller"],
-  ["nadav-overshirt", "אוברשירט נדב", "Nadav Overshirt", "terra", "outerwear-men", "jacket", 479, 599, "olive", "apparelMen", ""],
-  ["boaz-wool-coat", "מעיל צמר בועז", "Boaz Wool Coat", "atelier-nine", "outerwear-men", "coat", 1290, 0, "camel", "apparelMen", "new"],
+  // --- SHIRTS ------------------------------------------------------------
+  ["idan-oxford-shirt-sky", "חולצת אוקספורד עידן", "Idan Oxford Shirt", "atelier-nine", "shirts", "shirt", 389, 0, "sky", "apparel", "new"],
+  ["idan-oxford-shirt-white", "חולצת אוקספורד עידן", "Idan Oxford Shirt", "atelier-nine", "shirts", "shirt", 389, 0, "white", "apparel", ""],
+  ["tom-linen-shirt", "חולצת פשתן תום", "Tom Linen Shirt", "terra", "shirts", "shirt", 349, 429, "navy", "apparel", "bestseller"],
+  ["tom-linen-shirt-white", "חולצת פשתן תום", "Tom Linen Shirt", "terra", "shirts", "shirt", 349, 429, "white", "apparel", ""],
+  ["omer-camp-collar", "חולצת קמפ עומר", "Omer Camp Collar Shirt", "lune", "shirts", "shirt", 329, 0, "sage", "apparel", ""],
+  ["assaf-flannel", "חולצת פלאנל אסף", "Assaf Flannel Shirt", "nord", "shirts", "shirt", 379, 469, "burgundy", "apparel", ""],
+  ["matan-denim-shirt", "חולצת דנים מתן", "Matan Denim Shirt", "alma", "shirts", "shirt", 359, 0, "denim", "apparel", ""],
 
-  // --- SHOES -------------------------------------------------------------
-  ["runner-91", "סניקרס RUNNER 91", "Runner 91 Sneaker", "velo", "sneakers", "sneaker", 549, 0, "white", "shoesM", "new,bestseller"],
-  ["runner-91-grey", "סניקרס RUNNER 91", "Runner 91 Sneaker", "velo", "sneakers", "sneaker", 549, 0, "grey", "shoesW", ""],
-  ["court-low", "סניקרס COURT LOW", "Court Low Sneaker", "velo", "sneakers", "sneaker", 469, 599, "cream", "shoesW", ""],
-  ["sable-chelsea", "מגף צ׳לסי SABLE", "Sable Chelsea Boot", "sable", "boots", "boot", 899, 0, "brown", "shoesM", "new"],
-  ["sable-rider-boot", "מגף רוכב SABLE", "Sable Rider Boot", "sable", "boots", "boot", 999, 1290, "black", "shoesW", ""],
-  ["luna-heel", "עקב לונה", "Luna Heel", "sable", "heels", "heel", 649, 0, "black", "shoesW", ""],
-  ["luna-heel-nude", "עקב לונה", "Luna Heel", "sable", "heels", "heel", 649, 799, "sand", "shoesW", ""],
+  // --- KNITWEAR ----------------------------------------------------------
+  ["amit-merino-knit", "סריג מרינו עמית", "Amit Merino Knit", "nord", "knitwear", "knit", 499, 0, "charcoal", "apparel", "new,bestseller"],
+  ["amit-merino-knit-navy", "סריג מרינו עמית", "Amit Merino Knit", "nord", "knitwear", "knit", 499, 0, "navy", "apparel", ""],
+  ["gil-cable-knit", "סריג קלוע גיל", "Gil Cable Knit", "nord", "knitwear", "knit", 529, 649, "cream", "apparel", ""],
+  ["roi-half-zip", "סריג חצי רוכסן רועי", "Roi Half-Zip Knit", "lune", "knitwear", "knit", 459, 0, "stone", "apparel", "new"],
+  ["nir-wool-crew", "סריג צמר ניר", "Nir Wool Crew", "terra", "knitwear", "knit", 439, 539, "camel", "apparel", ""],
+  ["eran-polo-knit", "פולו סרוג ערן", "Eran Knitted Polo", "atelier-nine", "knitwear", "knit", 419, 0, "forest", "apparel", ""],
+
+  // --- HOODIES & SWEATS --------------------------------------------------
+  ["core-hoodie-grey", "קפוצ׳ון CORE", "Core Hoodie", "olive-co", "hoodies", "knit", 289, 0, "grey", "apparel", "bestseller"],
+  ["core-hoodie-black", "קפוצ׳ון CORE", "Core Hoodie", "olive-co", "hoodies", "knit", 289, 0, "black", "apparel", ""],
+  ["yotam-crew-sweat", "סווטשירט יותם", "Yotam Crew Sweat", "velo", "hoodies", "knit", 259, 329, "ecru", "apparel", ""],
+  ["barak-zip-hoodie", "קפוצ׳ון רוכסן ברק", "Barak Zip Hoodie", "velo", "hoodies", "knit", 319, 0, "forest", "apparel", "new"],
+  ["nino-club-sweat", "סווטשירט NINO CLUB", "NINO Club Sweat", "olive-co", "hoodies", "knit", 279, 349, "burgundy", "apparel", ""],
+
+  // --- TROUSERS ----------------------------------------------------------
+  ["eyal-chino-sand", "צ׳ינו אייל", "Eyal Chino", "atelier-nine", "pants", "pants", 399, 0, "sand", "waist", "bestseller"],
+  ["eyal-chino-navy", "צ׳ינו אייל", "Eyal Chino", "atelier-nine", "pants", "pants", 399, 0, "navy", "waist", ""],
+  ["eyal-chino-olive", "צ׳ינו אייל", "Eyal Chino", "atelier-nine", "pants", "pants", 399, 0, "olive", "waist", ""],
+  ["shaked-wide-trouser", "מכנס רחב שקד", "Shaked Wide Trouser", "lune", "pants", "pants", 449, 549, "charcoal", "waist", "new"],
+  ["itai-cargo", "מכנס דגמ״ח איתי", "Itai Cargo Trouser", "velo", "pants", "pants", 369, 0, "stone", "waist", ""],
+  ["gaia-pleated-trouser", "מכנס קפלים גיא", "Guy Pleated Trouser", "atelier-nine", "pants", "pants", 479, 0, "black", "waist", ""],
+
+  // --- JEANS -------------------------------------------------------------
+  ["dor-relaxed-jeans", "ג׳ינס רלאקסד דור", "Dor Relaxed Jeans", "alma", "jeans", "pants", 359, 459, "denim", "waist", "bestseller"],
+  ["dor-relaxed-jeans-black", "ג׳ינס רלאקסד דור", "Dor Relaxed Jeans", "alma", "jeans", "pants", 359, 459, "black", "waist", ""],
+  ["niv-straight-jeans", "ג׳ינס ישר ניב", "Niv Straight Jeans", "alma", "jeans", "pants", 389, 0, "navy", "waist", "new"],
+  ["oren-selvedge-jeans", "ג׳ינס סלוודג׳ אורן", "Oren Selvedge Jeans", "maison-noir", "jeans", "pants", 599, 0, "denim", "waist", ""],
+
+  // --- SHORTS ------------------------------------------------------------
+  ["yoav-sweat-shorts-grey", "מכנס פוטר יואב", "Yoav Sweat Shorts", "olive-co", "shorts", "shorts", 189, 0, "grey", "apparel", "new"],
+  ["yoav-sweat-shorts-black", "מכנס פוטר יואב", "Yoav Sweat Shorts", "olive-co", "shorts", "shorts", 189, 0, "black", "apparel", ""],
+  ["ziv-swim-shorts", "מכנס ים זיו", "Ziv Swim Shorts", "velo", "shorts", "shorts", 229, 299, "forest", "apparel", ""],
+  ["ziv-swim-shorts-navy", "מכנס ים זיו", "Ziv Swim Shorts", "velo", "shorts", "shorts", 229, 299, "navy", "apparel", ""],
+  ["adam-linen-shorts", "מכנס פשתן אדם", "Adam Linen Shorts", "terra", "shorts", "shorts", 249, 0, "ecru", "apparel", "bestseller"],
+
+  // --- OUTERWEAR ---------------------------------------------------------
+  ["ari-bomber", "בומבר ארי", "Ari Bomber Jacket", "velo", "outerwear", "jacket", 649, 0, "black", "apparel", "bestseller"],
+  ["nadav-overshirt", "אוברשירט נדב", "Nadav Overshirt", "terra", "outerwear", "jacket", 479, 599, "olive", "apparel", ""],
+  ["nadav-overshirt-brown", "אוברשירט נדב", "Nadav Overshirt", "terra", "outerwear", "jacket", 479, 599, "brown", "apparel", ""],
+  ["boaz-wool-coat", "מעיל צמר בועז", "Boaz Wool Coat", "atelier-nine", "outerwear", "coat", 1290, 0, "camel", "apparel", "new"],
+  ["yaron-trench", "טרנץ׳ ירון", "Yaron Trench Coat", "nord", "outerwear", "coat", 899, 1190, "stone", "apparel", ""],
+  ["guy-denim-jacket", "ג׳קט דנים גיא", "Guy Denim Jacket", "alma", "outerwear", "jacket", 429, 0, "denim", "apparel", ""],
+  ["maison-puffer", "מעיל פאפר MAISON", "Maison Puffer", "maison-noir", "outerwear", "coat", 1090, 1390, "black", "apparel", "new"],
+
+  // --- SNEAKERS ----------------------------------------------------------
+  ["runner-91-white", "סניקרס RUNNER 91", "Runner 91 Sneaker", "velo", "sneakers", "sneaker", 549, 0, "white", "shoes", "new,bestseller"],
+  ["runner-91-grey", "סניקרס RUNNER 91", "Runner 91 Sneaker", "velo", "sneakers", "sneaker", 549, 0, "grey", "shoes", ""],
+  ["runner-91-black", "סניקרס RUNNER 91", "Runner 91 Sneaker", "velo", "sneakers", "sneaker", 549, 0, "black", "shoes", ""],
+  ["court-low-cream", "סניקרס COURT LOW", "Court Low Sneaker", "velo", "sneakers", "sneaker", 469, 599, "cream", "shoes", ""],
+  ["sable-leather-sneaker", "סניקרס עור SABLE", "Sable Leather Sneaker", "sable", "sneakers", "sneaker", 699, 0, "white", "shoes", "bestseller"],
+  ["trail-42", "סניקרס TRAIL 42", "Trail 42 Sneaker", "velo", "sneakers", "sneaker", 599, 749, "olive", "shoes", "new"],
+
+  // --- BOOTS -------------------------------------------------------------
+  ["sable-chelsea", "מגף צ׳לסי SABLE", "Sable Chelsea Boot", "sable", "boots", "boot", 899, 0, "brown", "shoes", "new"],
+  ["sable-chelsea-black", "מגף צ׳לסי SABLE", "Sable Chelsea Boot", "sable", "boots", "boot", 899, 0, "black", "shoes", ""],
+  ["sable-desert-boot", "בוט מדברי SABLE", "Sable Desert Boot", "sable", "boots", "boot", 749, 949, "sand", "shoes", "bestseller"],
+  ["nord-hiker", "בוט NORD HIKER", "Nord Hiker Boot", "nord", "boots", "boot", 999, 0, "charcoal", "shoes", ""],
+
+  // --- SANDALS -----------------------------------------------------------
+  ["nino-slide", "כפכף NINO", "NINO Slide", "olive-co", "sandals", "sandal", 149, 0, "black", "shoes", "bestseller"],
+  ["nino-slide-sand", "כפכף NINO", "NINO Slide", "olive-co", "sandals", "sandal", 149, 0, "sand", "shoes", ""],
+  ["sable-leather-sandal", "סנדל עור SABLE", "Sable Leather Sandal", "sable", "sandals", "sandal", 399, 499, "brown", "shoes", ""],
 
   // --- ACCESSORIES -------------------------------------------------------
-  ["riva-tote", "תיק טוט RIVA", "Riva Leather Tote", "riva", "bags", "bag", 799, 0, "camel", "one", "bestseller"],
-  ["riva-tote-black", "תיק טוט RIVA", "Riva Leather Tote", "riva", "bags", "bag", 799, 0, "black", "one", ""],
-  ["riva-mini-bag", "תיק מיני RIVA", "Riva Mini Bag", "riva", "bags", "bag", 549, 699, "burgundy", "one", "new"],
-  ["nino-cap", "כובע מצחייה NINO", "NINO Cap", "olive-co", "hats", "cap", 119, 0, "black", "one", ""],
+  ["riva-weekender", "תיק ויקאנדר RIVA", "Riva Weekender Bag", "riva", "bags", "bag", 899, 0, "brown", "one", "bestseller"],
+  ["riva-crossbody", "תיק צד RIVA", "Riva Crossbody Bag", "riva", "bags", "bag", 549, 699, "black", "one", "new"],
+  ["nino-tote", "תיק בד NINO", "NINO Canvas Tote", "olive-co", "bags", "bag", 129, 0, "ecru", "one", ""],
+  ["nino-cap-black", "כובע מצחייה NINO", "NINO Cap", "olive-co", "hats", "cap", 119, 0, "black", "one", ""],
   ["nino-cap-sand", "כובע מצחייה NINO", "NINO Cap", "olive-co", "hats", "cap", 119, 0, "sand", "one", "new"],
+  ["nord-beanie", "כובע גרב NORD", "Nord Beanie", "nord", "hats", "cap", 149, 189, "charcoal", "one", ""],
+  ["riva-belt-brown", "חגורת עור RIVA", "Riva Leather Belt", "riva", "belts", "belt", 249, 0, "brown", "one", ""],
+  ["riva-belt-black", "חגורת עור RIVA", "Riva Leather Belt", "riva", "belts", "belt", 249, 0, "black", "one", ""],
   ["horizon-sunglasses", "משקפי HORIZON", "Horizon Sunglasses", "maison-noir", "sunglasses", "sunglasses", 289, 379, "charcoal", "one", "bestseller"],
-  ["riva-belt", "חגורת עור RIVA", "Riva Leather Belt", "riva", "belts", "belt", 249, 0, "brown", "one", ""],
+  ["aviator-nine", "משקפי AVIATOR NINE", "Aviator Nine Sunglasses", "atelier-nine", "sunglasses", "sunglasses", 349, 0, "black", "one", "new"],
   ["nord-scarf", "צעיף צמר NORD", "Nord Wool Scarf", "nord", "scarves", "scarf", 199, 259, "mustard", "one", ""],
+  ["nord-scarf-grey", "צעיף צמר NORD", "Nord Wool Scarf", "nord", "scarves", "scarf", 199, 259, "grey", "one", ""],
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -185,7 +211,7 @@ const rows: Row[] = [
 const groupOf = (categorySlug: string) =>
   categories.find((c) => c.slug === categorySlug)?.group ?? "new";
 const genderOf = (categorySlug: string) =>
-  categories.find((c) => c.slug === categorySlug)?.gender ?? "unisex";
+  categories.find((c) => c.slug === categorySlug)?.gender ?? "men";
 
 const detailCopy: Record<string, { he: string[]; en: string[] }> = {
   default: {
@@ -193,13 +219,13 @@ const detailCopy: Record<string, { he: string[]; en: string[] }> = {
       "גזרה רגילה, נופלת יפה על הגוף",
       "בד נעים במיוחד למגע",
       "כביסה עדינה עד 30°",
-      "הדוגמנית לובשת מידה S וגובהה 172 ס״מ",
+      "הדוגמן לובש מידה L וגובהו 183 ס״מ",
     ],
     en: [
-      "Regular fit that falls softly on the body",
+      "Regular fit that falls cleanly on the body",
       "Exceptionally soft handfeel",
       "Gentle wash up to 30°",
-      "Model is 172cm and wears a size S",
+      "Model is 183cm and wears a size L",
     ],
   },
   sneaker: {
@@ -214,6 +240,34 @@ const detailCopy: Record<string, { he: string[]; en: string[] }> = {
       "Rubber outsole with EVA cushioning",
       "Removable insole",
       "We recommend taking your usual size",
+    ],
+  },
+  boot: {
+    he: [
+      "עור מלא בעיבוד איטלקי",
+      "סוליית גומי עם אחיזה טובה",
+      "בטנת עור נושמת",
+      "מומלץ לרפד בקרם עור פעם בעונה",
+    ],
+    en: [
+      "Full-grain, Italian-tanned leather",
+      "Grippy rubber outsole",
+      "Breathable leather lining",
+      "Condition with leather cream once a season",
+    ],
+  },
+  sandal: {
+    he: [
+      "עליונית רכה שלא משפשפת",
+      "מדרס אנטומי",
+      "עמיד במים",
+      "קל לניקוי במים פושרים",
+    ],
+    en: [
+      "Soft upper that won't rub",
+      "Contoured footbed",
+      "Water resistant",
+      "Wipes clean with lukewarm water",
     ],
   },
   bag: {
@@ -232,7 +286,7 @@ const detailCopy: Record<string, { he: string[]; en: string[] }> = {
   },
 };
 
-const descriptionCopy = (silhouette: string, brand: string) => ({
+const descriptionCopy = (brand: string) => ({
   he: `פריט מקולקציית ${brand} שנבחר במיוחד עבור הבוטיק. שילוב של גזרה מוקפדת, בד איכותי וגימור נקי — קל ללבישה ביום-יום ומתאים גם לערב.`,
   en: `A piece from the ${brand} collection, hand-picked for the boutique. A considered cut, quality fabric and a clean finish — easy to wear by day and dressed up at night.`,
 });
@@ -278,16 +332,20 @@ export const products: Product[] = rows.map((row, index) => {
   const sizes = buildSizes(sizeSet, seed);
   if (sizes.some((s) => s.stock > 0 && s.stock <= 2)) badges.push("last-units");
 
-  // Newest items first in the array order, spaced a couple of days apart.
+  // Spread arrival dates so "new in" mixes categories instead of showing the
+  // first block of the list. Items badged "new" land inside the last 3 weeks.
   const created = new Date(2026, 6, 28);
-  created.setDate(created.getDate() - index * 2);
+  const daysAgo = badges.includes("new")
+    ? (seed + index) % 21
+    : 24 + ((seed * 3 + index) % 150);
+  created.setDate(created.getDate() - daysAgo);
 
   return {
     id: `p_${String(index + 1).padStart(3, "0")}`,
     slug,
     sku: `NN-${String(index + 1).padStart(4, "0")}`,
     title: { he: titleHe, en: titleEn },
-    description: descriptionCopy(silhouette, brand.name),
+    description: descriptionCopy(brand.name),
     details: detailCopy[silhouette] ?? detailCopy.default,
     brand: brandSlug,
     category,

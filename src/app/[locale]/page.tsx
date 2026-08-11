@@ -8,7 +8,12 @@ import CategoryTiles, { tilesFromProducts } from "@/components/home/CategoryTile
 import BrandStrip from "@/components/home/BrandStrip";
 import ProductRail from "@/components/product/ProductRail";
 import ProductCard from "@/components/product/ProductCard";
-import { getBrands, getNewItemsCount, getProducts } from "@/lib/api/products";
+import {
+  getBrands,
+  getCategories,
+  getNewItemsCount,
+  getProducts,
+} from "@/lib/api/products";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, localeHref } from "@/lib/i18n/config";
 import { SITE } from "@/lib/site";
@@ -25,27 +30,38 @@ export default async function HomePage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
-  const [heroProducts, newArrivals, bestSellers, saleItems, brands, newCount] =
-    await Promise.all([
-      getProducts({ group: "new", limit: 5, sort: "newest" }),
-      getProducts({ sort: "newest", limit: 10 }),
-      getProducts({ sort: "popular", limit: 10 }),
-      getProducts({ onSale: true, sort: "popular", limit: 10 }),
-      getBrands(),
-      getNewItemsCount(),
-    ]);
+  const [
+    heroProducts,
+    newArrivals,
+    bestSellers,
+    saleItems,
+    brands,
+    newCount,
+    categories,
+  ] = await Promise.all([
+    getProducts({ group: "new", limit: 5, sort: "newest" }),
+    getProducts({ sort: "newest", limit: 10 }),
+    getProducts({ sort: "popular", limit: 10 }),
+    getProducts({ onSale: true, sort: "popular", limit: 10 }),
+    getBrands(),
+    getNewItemsCount(),
+    getCategories(),
+  ]);
 
-  const [dress, tee, sneaker, bag] = await Promise.all([
-    getProducts({ category: "dresses", limit: 1 }),
+  const categoryLabel = (slug: string) =>
+    categories.find((c) => c.slug === slug)?.title[locale] ?? slug;
+
+  const [tee, outer, sneaker, bag] = await Promise.all([
     getProducts({ category: "tshirts", limit: 1 }),
+    getProducts({ category: "outerwear", limit: 1 }),
     getProducts({ category: "sneakers", limit: 1 }),
     getProducts({ category: "bags", limit: 1 }),
   ]);
 
   const tiles = tilesFromProducts(
     [
-      { label: dict.nav.women, slug: "dresses", product: dress[0] },
-      { label: dict.nav.men, slug: "tshirts", product: tee[0] },
+      { label: categoryLabel("tshirts"), slug: "tshirts", product: tee[0] },
+      { label: categoryLabel("outerwear"), slug: "outerwear", product: outer[0] },
       { label: dict.nav.shoes, slug: "sneakers", product: sneaker[0] },
       { label: dict.nav.accessories, slug: "bags", product: bag[0] },
     ],
@@ -101,17 +117,17 @@ export default async function HomePage({
         <CategoryTiles tiles={tiles} />
       </section>
 
-      {/* Her / Him -------------------------------------------------------- */}
+      {/* Clothing / Shoes -------------------------------------------------------- */}
       <section className="container-nino grid gap-3 pb-14 md:grid-cols-2 md:gap-5">
         {[
           {
-            label: dict.home.forHer,
-            href: localeHref(locale, "/women"),
+            label: dict.home.panelClothing,
+            href: localeHref(locale, "/clothing"),
             image: "/media/editorial-3.svg",
           },
           {
-            label: dict.home.forHim,
-            href: localeHref(locale, "/men"),
+            label: dict.home.panelShoes,
+            href: localeHref(locale, "/shoes"),
             image: "/media/editorial-2.svg",
           },
         ].map((panel) => (
@@ -142,7 +158,7 @@ export default async function HomePage({
       <section className="container-nino pb-14">
         <SectionHeader
           title={dict.home.trending}
-          href={localeHref(locale, "/category/new-in")}
+          href={localeHref(locale, "/clothing")}
           linkLabel={dict.common.viewAll}
         />
         <ProductRail>
