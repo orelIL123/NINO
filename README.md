@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NINO — חנות אונליין
 
-## Getting Started
+אתר תדמית + חנות אונליין לבוטיק **NINO**, נתיבות.
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · עברית ואנגלית עם RTL מלא.
 
-First, run the development server:
+כרגע האתר רץ על **קטלוג דמה** — 53 מוצרים, 10 מותגים ו-20 קטגוריות — כדי שאפשר
+יהיה לגלוש בכל מסך לפני שיש מלאי אמיתי. שכבת הגישה לנתונים מופרדת לגמרי מהממשק,
+כך שהמעבר ל-Firebase הוא החלפה של שני קבצים.
+
+---
+
+## הרצה
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm run build && npm run start   # בילד production
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+אין צורך במשתני סביבה כדי להריץ את הדמו.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## מה יש באתר
 
-To learn more about Next.js, take a look at the following resources:
+| מסך | נתיב |
+| --- | --- |
+| דף בית | `/he` · `/en` |
+| קטגוריה | `/he/category/dresses` |
+| עמודי-על | `/he/women` · `/men` · `/shoes` · `/accessories` · `/sale` |
+| דף מוצר | `/he/product/mila-midi-dress` |
+| מותגים | `/he/brands` · `/he/brands/lune` |
+| חיפוש | `/he/search?q=...` |
+| סל | `/he/cart` |
+| צ׳קאאוט | `/he/checkout` |
+| מועדפים | `/he/wishlist` |
+| אודות / צור קשר | `/he/about` · `/he/contact` |
+| דפי מידע | `/he/info/shipping` · `returns` · `faq` · `terms` · `privacy` · `accessibility` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+בנוסף: `sitemap.xml`, `robots.txt`, JSON-LD למוצרים, ומטא-דאטה דו-לשונית עם
+`hreflang`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**מה עובד:** ניווט עם מגה-מניו, חיפוש, סינון (מותג / מידה / צבע / מחיר / מבצע)
+ומיון, גלריית מוצר, בחירת מידה עם מלאי, סל עם דרואר, מועדפים, פס משלוח חינם,
+טופס צ׳קאאוט מלא, ומתג שפה ששומר על הנתיב.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## מבנה הפרויקט
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/[locale]/          כל המסכים, תחת he/en
+  app/api/orders/        נקודת הקצה של יצירת הזמנה
+  components/            layout · home · product · collection · cart · ui
+  lib/
+    api/products.ts      ← שכבת הקריאה. כאן מחליפים ל-Firestore
+    api/orders.ts        ← יצירת הזמנה. כאן מחברים סליקה
+    data/catalog.ts      קטלוג הדמה
+    data/pages.ts        תוכן דפי המידע
+    firebase/            קונפיג + README עם סכמת Firestore וכללי אבטחה
+    i18n/                מילון he/en + ספק locale
+    store/               סל ומועדפים (Context + localStorage)
+    site.ts              ← פרטי החנות: טלפון, כתובת, שעות, אינסטגרם
+  fonts/                 Assistant + Cormorant, variable woff2, מתארחים מקומית
+scripts/
+  generate-product-images.mjs   מחולל תמונות הדמה
+```
+
+---
+
+## מה צריך לעדכן לפני עלייה לאוויר
+
+1. **`src/lib/site.ts`** — טלפון, כתובת מדויקת, אימייל, שעות פתיחה, וואטסאפ.
+2. **תמונות** — להחליף את ה-SVG-ים ב-`public/products` ו-`public/media` בצילומים
+   אמיתיים (אותם שמות קבצים, או להצביע על Firebase Storage).
+3. **`src/lib/data/catalog.ts`** — או להחליף ב-Firestore, ראו למטה.
+4. **תקנון ומדיניות פרטיות** ב-`src/lib/data/pages.ts` — לעבור עם עורך דין.
+
+---
+
+## חיבור Firebase
+
+ההוראות המלאות, כולל סכמת Firestore, אינדקסים וכללי אבטחה:
+[`src/lib/firebase/README.md`](src/lib/firebase/README.md)
+
+בקצרה:
+
+```bash
+npm i firebase firebase-admin
+cp .env.example .env.local     # ולמלא
+```
+
+ואז להחליף את גוף הפונקציות ב-`src/lib/api/products.ts`. הממשק לא צריך לדעת
+שמשהו השתנה — כל הפונקציות כבר `async`.
+
+---
+
+## חיבור סליקה
+
+`POST /api/orders` כבר קיים. הוא מקבל את הסל, **מתמחר אותו מחדש מהשרת** (לא סומכים
+על מחירים שמגיעים מהדפדפן), בודק מלאי, ומחזיר מספר הזמנה.
+
+מה שנשאר:
+
+1. לשמור את ההזמנה ב-Firestore בסטטוס `pending`.
+2. לפתוח סשן תשלום מול הספק (טרנזילה / קארדקום / משולם / PayPlus / Stripe)
+   ולהחזיר את ה-URL או ה-token.
+3. לסמן `paid` **רק** מ-webhook שרת-לשרת, אף פעם לא מהדפדפן.
+
+נקודת החיבור בממשק מסומנת ב-`src/app/[locale]/checkout/CheckoutView.tsx`
+(החלק עם המסגרת המקווקוות).
+
+---
+
+## אדמין
+
+עוד לא נבנה. כשנגיע לזה, המבנה מוכן: הסכמה ב-`firebase/README.md` כוללת
+`orders`, ו-`isAdmin()` בכללי האבטחה מבוסס על custom claim.
+
+---
+
+## ביצועים
+
+- 213 עמודים מוגשים סטטית (בית, מוצרים, מותגים, דפי מידע).
+- פונטים מתארחים מקומית כ-variable woff2 — ~67KB לשלושתם, בלי בקשה ל-Google.
+- אין ספריית אייקונים ואין ספריית UI — הכל SVG inline.
+- הקטלוג לא מגיע לדפדפן: הסינון, החיפוש והכרטיסים מרונדרים בשרת. הסל שומר
+  snapshot של הפריט, כך שהדרואר לא צריך את הקטלוג.
+- תמונות דרך `next/image` עם `sizes` מדויק ו-AVIF/WebP.
+
+---
+
+## פריסה
+
+הכי פשוט — Vercel: לחבר את הריפו, להוסיף את משתני הסביבה, זהו.
+עובד גם על כל מקום שמריץ Node 20+ (`npm run build && npm run start`).
