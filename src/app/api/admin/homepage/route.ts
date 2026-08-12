@@ -38,6 +38,9 @@ const COLLECTIONS_QUERY = /* GraphQL */ `
           title
           description
         }
+        metafield(namespace: "custom", key: "homepage_content") {
+          value
+        }
         translations(locale: "he") {
           key
           value
@@ -110,6 +113,7 @@ interface CollectionNode {
   descriptionHtml: string;
   image: { id: string; url: string; altText: string | null } | null;
   seo: { title: string | null; description: string | null };
+  metafield: { value: string } | null;
   translations: Array<{ key: string; value: string; locale: string }>;
   products: { nodes: Array<{ featuredImage: { url: string } | null }> };
 }
@@ -179,6 +183,16 @@ export async function GET() {
       const translated = new Map(
         collection?.translations.map((item) => [item.key, item.value]) ?? []
       );
+      let stored: {
+        eyebrow?: Record<string, string>;
+        title?: Record<string, string>;
+        description?: Record<string, string>;
+      } = {};
+      try {
+        stored = collection?.metafield?.value
+          ? JSON.parse(collection.metafield.value)
+          : {};
+      } catch {}
       return {
         key,
         label: config.label,
@@ -187,21 +201,21 @@ export async function GET() {
         automaticImage: collection?.products.nodes[0]?.featuredImage?.url ?? null,
         ...(key === "seasonal"
           ? {
-              eyebrowEn: collection?.seo.title ?? "Seasonal collection",
-              eyebrowHe: translated.get("meta_title") ?? "קולקציית העונה",
+              eyebrowEn: stored.eyebrow?.en ?? collection?.seo.title ?? "Seasonal collection",
+              eyebrowHe: stored.eyebrow?.he ?? translated.get("meta_title") ?? "קולקציית העונה",
               titleEn:
-                collection?.seo.title && collection?.title
+                stored.title?.en ?? (collection?.seo.title && collection?.title
                   ? collection.title
-                  : "The new season",
-              titleHe: translated.get("title") ?? "העונה החדשה",
+                  : "The new season"),
+              titleHe: stored.title?.he ?? translated.get("title") ?? "העונה החדשה",
               descriptionEn:
-                collection?.seo.title && collection?.descriptionHtml
+                stored.description?.en ?? (collection?.seo.title && collection?.descriptionHtml
                   ? htmlToText(collection.descriptionHtml)
-                  : "Clean cuts, comfortable fabrics and calm colours. A collection selected item by item for the boutique in Netivot.",
+                  : "Clean cuts, comfortable fabrics and calm colours. A collection selected item by item for the boutique in Netivot."),
               descriptionHe:
-                translated.get("body_html")
+                stored.description?.he ?? (translated.get("body_html")
                   ? htmlToText(translated.get("body_html") || "")
-                  : "גזרות נקיות, בדים נעימים וצבעוניות רגועה. הקולקציה שנבחרה פריט-פריט עבור הבוטיק בנתיבות.",
+                  : "גזרות נקיות, בדים נעימים וצבעוניות רגועה. הקולקציה שנבחרה פריט-פריט עבור הבוטיק בנתיבות."),
             }
           : {}),
       };
@@ -261,6 +275,18 @@ export async function POST(request: Request) {
       input.title = titleEn;
       input.descriptionHtml = toHtml(descriptionEn);
       input.seo = { title: eyebrowEn };
+      input.metafields = [
+        {
+          namespace: "custom",
+          key: "homepage_content",
+          type: "json",
+          value: JSON.stringify({
+            eyebrow: { he: eyebrowHe, en: eyebrowEn },
+            title: { he: titleHe, en: titleEn },
+            description: { he: descriptionHe, en: descriptionEn },
+          }),
+        },
+      ];
       hebrew = {
         title: titleHe,
         body_html: toHtml(descriptionHe),
