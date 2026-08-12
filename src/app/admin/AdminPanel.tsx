@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import {
   DEFAULT_SIZES,
+  PRODUCT_COLORS,
   PRODUCT_TYPES,
   groupForProductType,
   type ProductType,
@@ -426,7 +427,16 @@ export default function AdminPanel({
                   dir="ltr"
                 />
               </label>
-              <Field label="צבע" name="color" defaultValue="White" required />
+              <label>
+                <span className={labelClass}>צבע</span>
+                <select name="color" className={inputClass} defaultValue="Black" required>
+                  {PRODUCT_COLORS.map((color) => (
+                    <option key={color.value} value={color.value}>
+                      {color.label} — {color.value}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <Field label="מלאי לכל מידה" name="stock" type="number" defaultValue="12" min="0" required />
               <Field label="מחיר ₪" name="price" type="number" step="0.01" min="0.01" defaultValue="149" required />
               <Field label="מחיר לפני הנחה ₪" name="compareAtPrice" type="number" step="0.01" min="0.01" />

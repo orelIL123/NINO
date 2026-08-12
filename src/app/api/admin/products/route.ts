@@ -23,11 +23,10 @@ const ADMIN_CONTEXT_QUERY = /* GraphQL */ `
         isActive
       }
     }
-    channels(first: 20) {
+    publications(first: 20) {
       nodes {
         id
         name
-        handle
       }
     }
   }
@@ -153,7 +152,7 @@ const TRANSLATIONS_REGISTER_MUTATION = /* GraphQL */ `
 
 interface AdminContext {
   locations: { nodes: Array<{ id: string; name: string; isActive: boolean }> };
-  channels: { nodes: Array<{ id: string; name: string; handle: string }> };
+  publications: { nodes: Array<{ id: string; name: string }> };
 }
 
 interface ProductCreateResponse {
@@ -350,11 +349,11 @@ export async function POST(request: Request) {
     const location = context.locations.nodes.find((item) => item.isActive);
     if (!location) throw new Error("No active Shopify inventory location was found");
 
-    const onlineStore = context.channels.nodes.find(
-      (channel) => channel.handle === "online_store"
+    const onlineStorePublication = context.publications.nodes.find(
+      (publication) => /online store/i.test(publication.name)
     );
-    if (draft.publish && !onlineStore)
-      throw new Error("The Online Store sales channel is not installed");
+    if (draft.publish && !onlineStorePublication)
+      throw new Error("The Online Store publication was not found");
 
     const group = groupForProductType(draft.productType);
     const tags = [...new Set([group, draft.gender, ...draft.extraTags])];
@@ -444,7 +443,7 @@ export async function POST(request: Request) {
         publishablePublish: MutationErrors;
       }>(PRODUCT_PUBLISH_MUTATION, {
         id: created.id,
-        input: [{ publicationId: onlineStore?.id }],
+        input: [{ publicationId: onlineStorePublication?.id }],
       });
       assertNoUserErrors(
         published.publishablePublish.userErrors,
