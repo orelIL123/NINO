@@ -1,5 +1,7 @@
 import "server-only";
 
+import { SHOPIFY_CATALOG_CACHE_TAG } from "./cache";
+
 /* -------------------------------------------------------------------------- */
 /*  SHOPIFY STOREFRONT API CLIENT                                             */
 /*                                                                            */
@@ -43,7 +45,7 @@ interface GraphQLResponse<T> {
 export async function storefront<T>(
   query: string,
   variables: Record<string, unknown> = {},
-  { revalidate = 3600 }: { revalidate?: number | false } = {}
+  { revalidate = 300 }: { revalidate?: number | false } = {}
 ): Promise<T> {
   if (!shopifyEnabled) {
     throw new ShopifyError(
@@ -62,7 +64,10 @@ export async function storefront<T>(
         ...(TOKEN ? { "X-Shopify-Storefront-Access-Token": TOKEN } : {}),
       },
       body: JSON.stringify({ query, variables }),
-      next: revalidate === false ? { revalidate: 0 } : { revalidate },
+      next:
+        revalidate === false
+          ? { revalidate: 0 }
+          : { revalidate, tags: [SHOPIFY_CATALOG_CACHE_TAG] },
     });
   } catch (cause) {
     throw new ShopifyError("Could not reach the Shopify Storefront API", cause);
