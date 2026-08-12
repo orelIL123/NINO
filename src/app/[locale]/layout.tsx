@@ -85,6 +85,21 @@ export async function generateMetadata({
       title: `NINO · ${dict.meta.tagline}`,
       description: dict.meta.description,
       locale: locale === "he" ? "he_IL" : "en_US",
+      url: `/${locale}`,
+      images: [
+        {
+          url: "/media/og-default.jpg",
+          width: 1200,
+          height: 630,
+          alt: `NINO · ${dict.meta.tagline}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `NINO · ${dict.meta.tagline}`,
+      description: dict.meta.description,
+      images: ["/media/og-default.jpg"],
     },
     icons: {
       icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
