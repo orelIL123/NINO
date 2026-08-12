@@ -4,19 +4,20 @@ import { defaultLocale, locales } from "@/lib/i18n/config";
 const PUBLIC_FILE = /\.(?:svg|png|jpg|jpeg|webp|avif|ico|txt|xml|json|webmanifest)$/;
 
 /** Adds the locale prefix to any URL that arrives without one. */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname === "/admin" ||
     PUBLIC_FILE.test(pathname)
   ) {
     return NextResponse.next();
   }
 
   const hasLocale = locales.some(
-    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
+    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
   if (hasLocale) return NextResponse.next();
 
@@ -28,8 +29,8 @@ export function middleware(request: NextRequest) {
     ?.split("-")[0];
 
   const locale =
-    locales.find((l) => l === cookieLocale) ??
-    locales.find((l) => l === headerLocale) ??
+    locales.find((candidate) => candidate === cookieLocale) ??
+    locales.find((candidate) => candidate === headerLocale) ??
     defaultLocale;
 
   const url = request.nextUrl.clone();

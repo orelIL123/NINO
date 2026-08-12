@@ -74,27 +74,22 @@ if (!DOMAIN) {
 }
 pass(`domain: ${DOMAIN}`);
 
-if (!TOKEN) {
-  fail("SHOPIFY_STOREFRONT_ACCESS_TOKEN is not set");
-  hint("Shopify admin -> Sales channels -> Headless -> Storefront API");
-  done(false);
-}
-
-// 2 — token shape. These prefixes are the usual mix-up and never valid here.
-if (TOKEN.startsWith("shpss_")) {
+// 2 — token shape, when supplied. Tokenless access covers the core storefront.
+if (TOKEN?.startsWith("shpss_")) {
   fail("that is an app secret key, not a Storefront token");
   hint("Secret keys grant write access and must never ship in a storefront.");
   done(false);
 }
-if (TOKEN.startsWith("shpat_")) {
+if (TOKEN?.startsWith("shpat_")) {
   fail("that is an Admin API token, not a Storefront token");
   done(false);
 }
-if (TOKEN.startsWith("atkn_")) {
+if (TOKEN?.startsWith("atkn_")) {
   fail("that is a Dev Dashboard token, not a Storefront token");
   done(false);
 }
-pass(`token: ${TOKEN.slice(0, 6)}… (${TOKEN.length} chars)`);
+if (TOKEN) pass(`token: ${TOKEN.slice(0, 6)}… (${TOKEN.length} chars)`);
+else pass("using supported tokenless Storefront access");
 
 // 3 — API version reachable
 const probe = await query({ query: "{shop{name}}" });
@@ -117,10 +112,13 @@ if (locked) {
 }
 pass("storefront is published");
 
-// 5 — the token itself
+// 5 — Storefront access (tokenless or token-based)
+const storefrontHeaders = TOKEN
+  ? { "X-Shopify-Storefront-Access-Token": TOKEN }
+  : {};
 const auth = await query(
   { query: "{shop{name primaryDomain{url}}}" },
-  { "X-Shopify-Storefront-Access-Token": TOKEN }
+  storefrontHeaders
 );
 
 if (auth.json?.errors?.some((e) => e.extensions?.code === "UNAUTHORIZED")) {
@@ -135,7 +133,7 @@ if (!auth.json?.data?.shop) {
   hint(JSON.stringify(auth.json)?.slice(0, 200));
   done(false);
 }
-pass(`authenticated as "${auth.json.data.shop.name}"`);
+pass(`connected as "${auth.json.data.shop.name}"`);
 
 // 6 — catalog readable, and shaped the way the transform expects
 const cat = await query(
@@ -146,7 +144,7 @@ const cat = await query(
       options{name}
     }}}}`,
   },
-  { "X-Shopify-Storefront-Access-Token": TOKEN }
+  storefrontHeaders
 );
 
 const nodes = cat.json?.data?.products?.edges?.map((e) => e.node) ?? [];

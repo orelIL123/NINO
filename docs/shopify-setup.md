@@ -20,9 +20,12 @@ Shopify לא מגישה נתונים לחנות נעולה. בלי זה שום �
 
 זו הדרך הנכונה ל־Next.js. **לא** צריך Custom App ו**לא** צריך Dev Dashboard.
 
-### שלב 3 — להעתיק את הטוקן
+### שלב 3 — טוקן ציבורי (אופציונלי לפיצ׳רים מורחבים)
 
 בתוך ערוץ Headless → `Storefront API` → **Public access token**.
+
+מוצרים, קולקציות, חיפוש ועגלות נתמכים גם בלי טוקן ב־Storefront API הנוכחי.
+טוקן עדיין נדרש לשדות ויכולות מוגנים כמו לקוחות, תפריטים ומטא־אובייקטים.
 
 ⚠️ הטוקן הזה, ולא אחר. אלה הטוקנים שנראים דומים ו**לא** יעבדו:
 
@@ -39,7 +42,7 @@ Shopify לא מגישה נתונים לחנות נעולה. בלי זה שום �
 
 ```
 SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=<Public access token>
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=<Public access token, optional>
 ```
 
 ### שלב 5 — לבדוק

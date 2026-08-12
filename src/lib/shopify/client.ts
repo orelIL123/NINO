@@ -1,5 +1,7 @@
 import "server-only";
 
+import { SHOPIFY_CATALOG_CACHE_TAG } from "./cache";
+
 /* -------------------------------------------------------------------------- */
 /*  SHOPIFY STOREFRONT API CLIENT                                             */
 /*                                                                            */
@@ -15,8 +17,9 @@ const DOMAIN = process.env.SHOPIFY_STORE_DOMAIN;
 const TOKEN = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 const API_VERSION = process.env.SHOPIFY_API_VERSION ?? "2026-01";
 
-/** True when the store credentials are present, so callers can fall back. */
-export const shopifyEnabled = Boolean(DOMAIN && TOKEN);
+/** Tokenless Storefront access supports catalog, search, collections and carts. */
+export const shopifyEnabled = Boolean(DOMAIN);
+export const storefrontTokenEnabled = Boolean(TOKEN);
 
 export class ShopifyError extends Error {
   constructor(
@@ -42,11 +45,11 @@ interface GraphQLResponse<T> {
 export async function storefront<T>(
   query: string,
   variables: Record<string, unknown> = {},
-  { revalidate = 3600 }: { revalidate?: number | false } = {}
+  { revalidate = 300 }: { revalidate?: number | false } = {}
 ): Promise<T> {
   if (!shopifyEnabled) {
     throw new ShopifyError(
-      "Shopify is not configured. Set SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN."
+      "Shopify is not configured. Set SHOPIFY_STORE_DOMAIN."
     );
   }
 
@@ -58,10 +61,13 @@ export async function storefront<T>(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": TOKEN as string,
+        ...(TOKEN ? { "X-Shopify-Storefront-Access-Token": TOKEN } : {}),
       },
       body: JSON.stringify({ query, variables }),
-      next: revalidate === false ? { revalidate: 0 } : { revalidate },
+      next:
+        revalidate === false
+          ? { revalidate: 0 }
+          : { revalidate, tags: [SHOPIFY_CATALOG_CACHE_TAG] },
     });
   } catch (cause) {
     throw new ShopifyError("Could not reach the Shopify Storefront API", cause);
