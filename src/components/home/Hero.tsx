@@ -21,7 +21,7 @@ export default function Hero({
 
   return (
     <section className="relative">
-      <div className="relative h-[78vh] min-h-[500px] w-full overflow-hidden bg-tile md:h-[86vh]">
+      <div className="relative h-[80vh] min-h-[540px] w-full overflow-hidden bg-tile md:h-[88vh]">
         <Image
           src="/media/hero-main.jpg"
           alt={dict.home.heroTitle}
@@ -29,13 +29,18 @@ export default function Hero({
           priority
           fetchPriority="high"
           sizes="100vw"
-          className="object-cover object-center"
+          /* Bias the crop upward so the graphic on the tee stays above the type. */
+          className="object-cover object-[center_22%]"
         />
 
-        {/* Legibility scrim — bottom-weighted so the image reads clean up top. */}
+        {/*
+          Cinematic scrim. The garment is white and the studio backdrop is pale,
+          so the lower half needs real density before white type is readable —
+          a light wash is not enough here.
+        */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent"
+          className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,10,10,0.82)_0%,rgba(10,10,10,0.62)_18%,rgba(10,10,10,0.28)_38%,rgba(10,10,10,0.06)_58%,transparent_75%)]"
         />
 
         <div className="absolute inset-x-0 bottom-0 pb-12 md:pb-20">
