@@ -7,6 +7,7 @@ import {
 } from "./client";
 import {
   CART_CREATE_MUTATION,
+  HOMEPAGE_COLLECTIONS_QUERY,
   PRODUCTS_QUERY,
   PRODUCT_BY_HANDLE_QUERY,
 } from "./queries";
@@ -34,6 +35,22 @@ const SORT: Record<SortKey, { sortKey: string; reverse: boolean }> = {
 
 type ProductsResponse = { products: { edges: Array<{ node: ShopifyProduct }> } };
 type ProductResponse = { product: ShopifyProduct | null };
+
+export interface HomepageCollection {
+  handle: string;
+  title: string;
+  description: string;
+  image: { url: string; altText: string | null } | null;
+  seo: { title: string | null; description: string | null };
+}
+
+export interface HomepageCollections {
+  tshirts: HomepageCollection | null;
+  outerwear: HomepageCollection | null;
+  shoes: HomepageCollection | null;
+  accessories: HomepageCollection | null;
+  seasonal: HomepageCollection | null;
+}
 
 /**
  * Reads a page of products. `query` accepts Shopify's search syntax, e.g.
@@ -86,6 +103,15 @@ export async function fetchProduct(handle: string): Promise<Product | null> {
 
   if (!he.product) return null;
   return toProduct(he.product, en.product ?? he.product);
+}
+
+/** Reads the localized collection content used by the homepage editor. */
+export async function fetchHomepageCollections(
+  locale: "he" | "en"
+): Promise<HomepageCollections> {
+  return storefront<HomepageCollections>(HOMEPAGE_COLLECTIONS_QUERY, {
+    language: languageCode[locale],
+  });
 }
 
 /**
