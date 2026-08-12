@@ -42,6 +42,7 @@ export interface HomepageCollection {
   description: string;
   image: { url: string; altText: string | null } | null;
   seo: { title: string | null; description: string | null };
+  metafield: { value: string } | null;
 }
 
 export interface HomepageCollections {
@@ -109,9 +110,33 @@ export async function fetchProduct(handle: string): Promise<Product | null> {
 export async function fetchHomepageCollections(
   locale: "he" | "en"
 ): Promise<HomepageCollections> {
-  return storefront<HomepageCollections>(HOMEPAGE_COLLECTIONS_QUERY, {
+  const collections = await storefront<HomepageCollections>(HOMEPAGE_COLLECTIONS_QUERY, {
     language: languageCode[locale],
   });
+  const seasonal = collections.seasonal;
+  if (!seasonal?.metafield?.value) return collections;
+
+  try {
+    const content = JSON.parse(seasonal.metafield.value) as {
+      eyebrow?: Partial<Record<"he" | "en", string>>;
+      title?: Partial<Record<"he" | "en", string>>;
+      description?: Partial<Record<"he" | "en", string>>;
+    };
+    return {
+      ...collections,
+      seasonal: {
+        ...seasonal,
+        title: content.title?.[locale] || seasonal.title,
+        description: content.description?.[locale] || seasonal.description,
+        seo: {
+          ...seasonal.seo,
+          title: content.eyebrow?.[locale] || seasonal.seo.title,
+        },
+      },
+    };
+  } catch {
+    return collections;
+  }
 }
 
 /**
