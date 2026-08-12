@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import Hero from "@/components/home/Hero";
+import StoreJsonLd from "@/components/seo/StoreJsonLd";
 import SectionHeader from "@/components/home/SectionHeader";
 import EditorialBanner from "@/components/home/EditorialBanner";
 import CategoryTiles, { tilesFromProducts } from "@/components/home/CategoryTiles";
@@ -75,6 +76,8 @@ export default async function HomePage({
 
   return (
     <>
+      <StoreJsonLd locale={locale} />
+
       <Hero newCount={newCount} locale={locale} />
 
       {/* New arrivals ---------------------------------------------------- */}
