@@ -44,25 +44,42 @@ export default function Hero({
         />
 
         <div className="absolute inset-x-0 bottom-0 pb-12 md:pb-20">
+          {/* Staggered entrance — each line lands just after the one above it. */}
           <div className="container-nino text-center text-white">
-            <p className="eyebrow text-white/75">
+            <p
+              className="eyebrow rise text-white/75"
+              style={{ animationDelay: "120ms" }}
+            >
               {formatNumber(newCount, locale)} · {dict.home.heroCountSuffix}
             </p>
 
-            <h1 className="font-display mt-4 text-4xl leading-[1.1] font-light text-balance md:text-6xl lg:text-7xl">
+            <h1
+              className="font-display rise mt-4 text-4xl leading-[1.1] font-light text-balance md:text-6xl lg:text-7xl"
+              style={{ animationDelay: "240ms" }}
+            >
               {dict.home.heroTitle}
             </h1>
 
-            <p className="mx-auto mt-4 max-w-md text-sm text-white/85 md:text-base">
+            <p
+              className="rise mx-auto mt-4 max-w-md text-sm text-white/85 md:text-base"
+              style={{ animationDelay: "380ms" }}
+            >
               {dict.home.heroSubtitle}
             </p>
 
-            <Link
-              href={localeHref(locale, "/category/new-in")}
-              className="mt-8 inline-block border border-white/80 px-10 py-3.5 text-xs tracking-[0.22em] text-white uppercase transition-colors duration-300 hover:bg-white hover:text-ink focus-visible:bg-white focus-visible:text-ink"
-            >
-              {dict.home.shopNow}
-            </Link>
+            <div className="rise" style={{ animationDelay: "520ms" }}>
+              <Link
+                href={localeHref(locale, "/category/new-in")}
+                className="group relative mt-8 inline-block overflow-hidden border border-white/80 px-10 py-3.5 text-xs tracking-[0.22em] text-white uppercase transition-[letter-spacing,color] duration-500 hover:tracking-[0.3em] hover:text-ink focus-visible:text-ink"
+              >
+                {/* White fill wipes in from the reading edge. */}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 -z-10 origin-[inline-start] scale-x-0 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                />
+                {dict.home.shopNow}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

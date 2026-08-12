@@ -23,7 +23,6 @@ export default function Footer() {
         { label: dict.nav.new, href: href("/category/new-in") },
         { label: dict.nav.clothing, href: href("/clothing") },
         { label: dict.nav.shoes, href: href("/shoes") },
-        { label: dict.nav.accessories, href: href("/accessories") },
         { label: dict.nav.sale, href: href("/sale") },
       ],
     },

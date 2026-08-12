@@ -10,7 +10,7 @@ import LocaleSwitcher from "./LocaleSwitcher";
 import MobileNav from "./MobileNav";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useStore } from "@/lib/store/StoreProvider";
-import type { Brand, Category } from "@/lib/data/types";
+import type { Category } from "@/lib/data/types";
 import {
   BagIcon,
   CloseIcon,
@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/Icons";
 
 export interface NavGroup {
-  key: Category["group"] | "brands";
+  key: Category["group"];
   label: string;
   href: string;
   accent?: boolean;
@@ -29,13 +29,7 @@ export interface NavGroup {
   promo?: { title: string; text: string; href: string; image: string };
 }
 
-export default function Header({
-  categories,
-  brands,
-}: {
-  categories: Category[];
-  brands: Brand[];
-}) {
+export default function Header({ categories }: { categories: Category[] }) {
   const { dict, locale, href } = useLocale();
   const { cartCount, openDrawer, wishlist, ready } = useStore();
   const router = useRouter();
@@ -99,33 +93,13 @@ export default function Header({
         },
       },
       {
-        key: "accessories",
-        label: dict.nav.accessories,
-        href: href("/accessories"),
-        columns: [{ title: dict.nav.accessories, links: inGroup("accessories") }],
-      },
-      {
-        key: "brands",
-        label: dict.nav.brands,
-        href: href("/brands"),
-        columns: [
-          {
-            title: dict.nav.brands,
-            links: brands.map((b) => ({
-              label: b.name,
-              href: href(`/brands/${b.slug}`),
-            })),
-          },
-        ],
-      },
-      {
         key: "sale",
         label: dict.nav.sale,
         href: href("/sale"),
         accent: true,
       },
     ];
-  }, [categories, brands, dict, locale, href]);
+  }, [categories, dict, locale, href]);
 
   const scheduleClose = useCallback(() => {
     if (closeTimer.current) window.clearTimeout(closeTimer.current);

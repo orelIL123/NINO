@@ -21,6 +21,10 @@
   --spacing-gutter: 1.25rem;
 
   --breakpoint-xs: 24rem;
+
+  /* Decelerating curve — motion arrives quickly then settles, which reads as
+     composed rather than bouncy. Used for every reveal and hover wipe. */
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 @layer base {
@@ -127,6 +131,9 @@
   }
 
   .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -139,8 +146,35 @@
     transition:
       background-color 0.2s ease,
       color 0.2s ease,
-      opacity 0.2s ease;
+      opacity 0.2s ease,
+      letter-spacing 0.4s var(--ease-out-soft);
     cursor: pointer;
+  }
+
+  /* A sheen that wipes across on hover. Origin is logical, so it travels
+     right-to-left in Hebrew and left-to-right in English. */
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: currentColor;
+    opacity: 0.14;
+    transform: scaleX(0);
+    transform-origin: inline-start;
+    transition: transform 0.45s var(--ease-out-soft);
+  }
+
+  .btn:hover:not(:disabled)::before {
+    transform: scaleX(1);
+  }
+
+  .btn:hover:not(:disabled) {
+    letter-spacing: 0.17em;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(1px);
   }
 
   .btn-primary {
@@ -200,6 +234,28 @@
     animation: fade-in 0.3s ease both;
   }
 
+  /* Scroll reveal. The element is in the DOM and readable by crawlers from the
+     first byte — only its paint is deferred until it scrolls into view. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.7s var(--ease-out-soft),
+      transform 0.7s var(--ease-out-soft);
+    will-change: opacity, transform;
+  }
+
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  /* Entrance for above-the-fold content, which has no scroll event to wait on. */
+  .rise {
+    animation: fade-up 0.9s var(--ease-out-soft) both;
+  }
+
   .flip-rtl:where([dir="rtl"] *) {
     transform: scaleX(-1);
   }
@@ -232,5 +288,11 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Skip the travel entirely rather than racing through it. */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

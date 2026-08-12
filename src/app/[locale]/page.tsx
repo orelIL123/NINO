@@ -3,18 +3,13 @@ import { notFound } from "next/navigation";
 
 import Hero from "@/components/home/Hero";
 import StoreJsonLd from "@/components/seo/StoreJsonLd";
+import Reveal from "@/components/ui/Reveal";
 import SectionHeader from "@/components/home/SectionHeader";
 import EditorialBanner from "@/components/home/EditorialBanner";
 import CategoryTiles, { tilesFromProducts } from "@/components/home/CategoryTiles";
-import BrandStrip from "@/components/home/BrandStrip";
 import ProductRail from "@/components/product/ProductRail";
 import ProductCard from "@/components/product/ProductCard";
-import {
-  getBrands,
-  getCategories,
-  getNewItemsCount,
-  getProducts,
-} from "@/lib/api/products";
+import { getCategories, getNewItemsCount, getProducts } from "@/lib/api/products";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, localeHref } from "@/lib/i18n/config";
 import { SITE } from "@/lib/site";
@@ -31,21 +26,14 @@ export default async function HomePage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
-  const [
-    newArrivals,
-    bestSellers,
-    saleItems,
-    brands,
-    newCount,
-    categories,
-  ] = await Promise.all([
-    getProducts({ sort: "newest", limit: 10 }),
-    getProducts({ sort: "popular", limit: 10 }),
-    getProducts({ onSale: true, sort: "popular", limit: 10 }),
-    getBrands(),
-    getNewItemsCount(),
-    getCategories(),
-  ]);
+  const [newArrivals, bestSellers, saleItems, newCount, categories] =
+    await Promise.all([
+      getProducts({ sort: "newest", limit: 10 }),
+      getProducts({ sort: "popular", limit: 10 }),
+      getProducts({ onSale: true, sort: "popular", limit: 10 }),
+      getNewItemsCount(),
+      getCategories(),
+    ]);
 
   const categoryLabel = (slug: string) =>
     categories.find((c) => c.slug === slug)?.title[locale] ?? slug;
@@ -81,7 +69,7 @@ export default async function HomePage({
       <Hero newCount={newCount} locale={locale} />
 
       {/* New arrivals ---------------------------------------------------- */}
-      <section className="container-nino py-14">
+      <Reveal as="section" className="container-nino py-14">
         <SectionHeader
           title={dict.home.newIn}
           href={localeHref(locale, "/category/new-in")}
@@ -101,7 +89,7 @@ export default async function HomePage({
             </div>
           ))}
         </ProductRail>
-      </section>
+      </Reveal>
 
       <EditorialBanner
         image="/media/editorial-1.svg"
@@ -113,13 +101,16 @@ export default async function HomePage({
       />
 
       {/* Category tiles --------------------------------------------------- */}
-      <section className="container-nino py-14">
+      <Reveal as="section" className="container-nino py-14">
         <SectionHeader title={dict.home.categoriesTitle} align="center" />
         <CategoryTiles tiles={tiles} />
-      </section>
+      </Reveal>
 
       {/* Clothing / Shoes -------------------------------------------------------- */}
-      <section className="container-nino grid gap-3 pb-14 md:grid-cols-2 md:gap-5">
+      <Reveal
+        as="section"
+        className="container-nino grid gap-3 pb-14 md:grid-cols-2 md:gap-5"
+      >
         {[
           {
             label: dict.home.panelClothing,
@@ -153,10 +144,10 @@ export default async function HomePage({
             </span>
           </Link>
         ))}
-      </section>
+      </Reveal>
 
       {/* Best sellers ----------------------------------------------------- */}
-      <section className="container-nino pb-14">
+      <Reveal as="section" className="container-nino pb-14">
         <SectionHeader
           title={dict.home.trending}
           href={localeHref(locale, "/clothing")}
@@ -176,7 +167,7 @@ export default async function HomePage({
             </div>
           ))}
         </ProductRail>
-      </section>
+      </Reveal>
 
       <EditorialBanner
         image="/media/sale.svg"
@@ -192,7 +183,7 @@ export default async function HomePage({
 
       {/* Sale rail -------------------------------------------------------- */}
       {saleItems.length > 0 && (
-        <section className="container-nino py-14">
+        <Reveal as="section" className="container-nino py-14">
           <SectionHeader
             title={dict.home.saleTitle}
             href={localeHref(locale, "/sale")}
@@ -212,19 +203,14 @@ export default async function HomePage({
               </div>
             ))}
           </ProductRail>
-        </section>
+        </Reveal>
       )}
 
-      {/* Brands ----------------------------------------------------------- */}
-      <section className="border-y border-line bg-surface py-12">
-        <div className="container-nino">
-          <SectionHeader title={dict.home.brandsTitle} align="center" />
-          <BrandStrip brands={brands} locale={locale} />
-        </div>
-      </section>
-
       {/* Visit the store -------------------------------------------------- */}
-      <section className="container-nino grid items-center gap-8 py-16 md:grid-cols-2 md:gap-14">
+      <Reveal
+        as="section"
+        className="container-nino grid items-center gap-8 py-16 md:grid-cols-2 md:gap-14"
+      >
         <div
           className="aspect-4/3 bg-cover bg-center"
           style={{ backgroundImage: "url(/media/store.svg)" }}
@@ -243,7 +229,7 @@ export default async function HomePage({
             {dict.home.visitCta}
           </Link>
         </div>
-      </section>
+      </Reveal>
 
       {/* Perks ------------------------------------------------------------ */}
       <section className="border-t border-line">

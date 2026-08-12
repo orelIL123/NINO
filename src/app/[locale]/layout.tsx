@@ -11,7 +11,7 @@ import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { StoreProvider } from "@/lib/store/StoreProvider";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, locales, localeDirection } from "@/lib/i18n/config";
-import { getBrands, getCategories } from "@/lib/api/products";
+import { getCategories } from "@/lib/api/products";
 import { SITE } from "@/lib/site";
 
 /**
@@ -118,7 +118,7 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   const dict = getDictionary(locale);
-  const [categories, brands] = await Promise.all([getCategories(), getBrands()]);
+  const categories = await getCategories();
 
   return (
     <html
@@ -136,7 +136,7 @@ export default async function LocaleLayout({
             >
               {dict.common.skipToContent}
             </a>
-            <Header categories={categories} brands={brands} />
+            <Header categories={categories} />
             <main id="main" className="flex-1">
               {children}
             </main>
