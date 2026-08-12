@@ -36,12 +36,18 @@ export default function CategoryTiles({ tiles }: { tiles: Tile[] }) {
 
 /** Builds tiles from products so each category shows a real item. */
 export function tilesFromProducts(
-  entries: { label: string; slug: string; product?: Product }[],
+  entries: {
+    label: string;
+    slug: string;
+    product?: Product;
+    overrideImage?: string | null;
+  }[],
   locale: Locale
 ): Tile[] {
   return entries.map((e) => ({
     label: e.label,
     href: localeHref(locale, `/category/${e.slug}`),
-    image: e.product?.images[0] ?? "/media/editorial-1.svg",
+    image:
+      e.overrideImage ?? e.product?.images[0] ?? "/media/editorial-1.svg",
   }));
 }

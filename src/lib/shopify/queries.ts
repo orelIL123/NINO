@@ -133,6 +133,42 @@ export const COLLECTIONS_QUERY = /* GraphQL */ `
   }
 `;
 
+/** Homepage merchandising content stored on Shopify collections. */
+export const HOMEPAGE_COLLECTIONS_QUERY = /* GraphQL */ `
+  query HomepageCollections($language: LanguageCode)
+  @inContext(language: $language) {
+    tshirts: collection(handle: "t-shirts") {
+      ...HomepageCollectionFields
+    }
+    outerwear: collection(handle: "jackets-coats") {
+      ...HomepageCollectionFields
+    }
+    shoes: collection(handle: "shoes") {
+      ...HomepageCollectionFields
+    }
+    accessories: collection(handle: "accessories") {
+      ...HomepageCollectionFields
+    }
+    seasonal: collection(handle: "new-in") {
+      ...HomepageCollectionFields
+    }
+  }
+
+  fragment HomepageCollectionFields on Collection {
+    handle
+    title
+    description
+    image {
+      url
+      altText
+    }
+    seo {
+      title
+      description
+    }
+  }
+`;
+
 /* --------------------------------- cart ---------------------------------- */
 
 const CART_FRAGMENT = /* GraphQL */ `
