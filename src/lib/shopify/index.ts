@@ -1,6 +1,10 @@
 import "server-only";
 
-import { shopifyEnabled, storefront } from "./client";
+import {
+  shopifyEnabled,
+  storefront,
+  storefrontTokenEnabled,
+} from "./client";
 import {
   CART_CREATE_MUTATION,
   PRODUCTS_QUERY,
@@ -54,6 +58,7 @@ export async function fetchProducts({
         sortKey,
         reverse,
         language: languageCode[locale],
+        includeInventory: storefrontTokenEnabled,
       })
     )
   );
@@ -74,6 +79,7 @@ export async function fetchProduct(handle: string): Promise<Product | null> {
       storefront<ProductResponse>(PRODUCT_BY_HANDLE_QUERY, {
         handle,
         language: languageCode[locale],
+        includeInventory: storefrontTokenEnabled,
       })
     )
   );
