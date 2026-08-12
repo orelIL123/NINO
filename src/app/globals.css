@@ -239,21 +239,24 @@
     animation: fade-in 0.3s ease both;
   }
 
-  /* Scroll reveal. The element is in the DOM and readable by crawlers from the
-     first byte — only its paint is deferred until it scrolls into view. */
-  .reveal {
-    opacity: 0;
-    transform: translateY(20px);
-    transition:
-      opacity 0.7s var(--ease-out-soft),
-      transform 0.7s var(--ease-out-soft);
-    will-change: opacity, transform;
-  }
+  /* Scroll reveal, driven entirely by CSS.
 
-  .reveal-in {
-    opacity: 1;
-    transform: none;
-    will-change: auto;
+     Visibility is never gated on JavaScript: the default state is fully
+     visible, and the fade-up is layered on only where scroll-driven
+     animation is supported. A browser that lacks it — or any environment
+     where script does not run — simply shows the section. The earlier
+     JS versions of this could leave a whole page at opacity 0 when an
+     observer or scroll event silently failed to fire. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: fade-up linear both;
+        animation-timeline: view();
+        /* Play across the first stretch of the entry, so the section has
+           settled by the time it is comfortably in frame. */
+        animation-range: entry 0% entry 55%;
+      }
+    }
   }
 
   /* Entrance for above-the-fold content, which has no scroll event to wait on. */
