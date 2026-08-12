@@ -10,12 +10,12 @@ import {
   useState,
 } from "react";
 import type { CartLine, WishlistItem } from "@/lib/data/types";
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "@/lib/shipping";
+
+export { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "@/lib/shipping";
 
 const CART_KEY = "nino.cart.v1";
 const WISH_KEY = "nino.wishlist.v1";
-
-export const FREE_SHIPPING_THRESHOLD = 400;
-export const SHIPPING_COST = 29;
 
 type State = { cart: CartLine[]; wishlist: WishlistItem[]; ready: boolean };
 

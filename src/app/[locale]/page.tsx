@@ -9,7 +9,11 @@ import EditorialBanner from "@/components/home/EditorialBanner";
 import CategoryTiles, { tilesFromProducts } from "@/components/home/CategoryTiles";
 import ProductRail from "@/components/product/ProductRail";
 import ProductCard from "@/components/product/ProductCard";
-import { getCategories, getNewItemsCount, getProducts } from "@/lib/api/products";
+import {
+  getCategoryLabel,
+  getNewItemsCount,
+  getProducts,
+} from "@/lib/api/products";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, localeHref } from "@/lib/i18n/config";
 import { SITE } from "@/lib/site";
@@ -43,18 +47,14 @@ export default async function HomePage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
-  const [newArrivals, bestSellers, saleItems, newCount, categories, homepage] =
+  const [newArrivals, bestSellers, saleItems, newCount, homepage] =
     await Promise.all([
       getProducts({ sort: "newest", limit: 10 }),
       getProducts({ sort: "popular", limit: 10 }),
       getProducts({ onSale: true, sort: "popular", limit: 10 }),
       getNewItemsCount(),
-      getCategories(),
       getHomepageCollections(locale),
     ]);
-
-  const categoryLabel = (slug: string) =>
-    categories.find((c) => c.slug === slug)?.title[locale] ?? slug;
 
   const [tee, outer, sneaker, bag] = await Promise.all([
     getProducts({ category: "tshirts", limit: 1 }),
@@ -66,13 +66,13 @@ export default async function HomePage({
   const tiles = tilesFromProducts(
     [
       {
-        label: categoryLabel("tshirts"),
+        label: getCategoryLabel("tshirts", locale),
         slug: "tshirts",
         product: tee[0],
         overrideImage: homepage?.tshirts?.image?.url,
       },
       {
-        label: categoryLabel("outerwear"),
+        label: getCategoryLabel("outerwear", locale),
         slug: "outerwear",
         product: outer[0],
         overrideImage: homepage?.outerwear?.image?.url,
@@ -80,12 +80,14 @@ export default async function HomePage({
       {
         label: dict.nav.shoes,
         slug: "sneakers",
+        href: "/shoes",
         product: sneaker[0],
         overrideImage: homepage?.shoes?.image?.url,
       },
       {
         label: dict.nav.accessories,
         slug: "bags",
+        href: "/accessories",
         product: bag[0],
         overrideImage: homepage?.accessories?.image?.url,
       },

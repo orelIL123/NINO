@@ -8,7 +8,7 @@ const he = {
       "NINO — בוטיק אופנה לגברים בנתיבות. ביגוד ונעליים ממותגים נבחרים, קולקציות עונתיות ושירות אישי.",
   },
   announcement: {
-    shipping: "משלוח חינם בקנייה מעל ₪400",
+    shipping: "משלוח חינם בקנייה מעל ₪700",
     returns: "החזרה והחלפה תוך 14 יום",
     store: "איסוף עצמי מהחנות בנתיבות",
   },
@@ -214,7 +214,7 @@ const en: typeof he = {
       "NINO — a men's fashion boutique in Netivot. Curated clothing and footwear, seasonal collections and personal service.",
   },
   announcement: {
-    shipping: "Free shipping on orders over ₪400",
+    shipping: "Free shipping on orders over ₪700",
     returns: "14-day returns & exchanges",
     store: "Free pickup at our Netivot store",
   },

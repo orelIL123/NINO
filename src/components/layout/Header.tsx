@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import AnnouncementBar from "./AnnouncementBar";
@@ -33,6 +33,8 @@ export default function Header({ categories }: { categories: Category[] }) {
   const { dict, locale, href } = useLocale();
   const { cartCount, openDrawer, wishlist, ready } = useStore();
   const router = useRouter();
+  const pathname = usePathname();
+  const isHome = pathname === `/${locale}` || pathname === `/${locale}/`;
 
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -132,13 +134,6 @@ export default function Header({ categories }: { categories: Category[] }) {
         key: "shoes",
         label: dict.nav.shoes,
         href: href("/shoes"),
-        columns: [{ title: dict.nav.shoes, links: inGroup("shoes") }],
-        promo: {
-          title: dict.home.editorialTitle,
-          text: dict.home.panelShoes,
-          href: href("/shoes"),
-          image: "/media/editorial-2.svg",
-        },
       },
       {
         key: "sale",
@@ -167,17 +162,33 @@ export default function Header({ categories }: { categories: Category[] }) {
   };
 
   const active = nav.find((n) => n.key === openGroup);
+  const homeChromeOpen = Boolean(openGroup || searchOpen || mobileOpen);
 
   return (
     <>
-      <AnnouncementBar />
-
-      <header
-        className={`sticky top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] supports-[backdrop-filter]:bg-canvas/85 ${
-          retracted ? "-translate-y-full" : "translate-y-0"
-        }`}
-        onMouseLeave={scheduleClose}
+      <div
+        className={
+          isHome
+            ? `absolute inset-x-0 top-0 z-40 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] ${
+                homeChromeOpen
+                  ? "translate-y-0 opacity-100"
+                  : "lg:-translate-y-2 lg:opacity-0 lg:hover:translate-y-0 lg:hover:opacity-100 lg:focus-within:translate-y-0 lg:focus-within:opacity-100"
+              }`
+            : ""
+        }
       >
+        <AnnouncementBar />
+
+        <header
+          className={`border-b backdrop-blur transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] ${
+            isHome
+              ? "relative border-white/35 bg-white/88 supports-[backdrop-filter]:bg-white/76"
+              : `sticky top-0 z-40 border-line bg-canvas/95 supports-[backdrop-filter]:bg-canvas/85 ${
+                  retracted ? "-translate-y-full" : "translate-y-0"
+                }`
+          }`}
+          onMouseLeave={scheduleClose}
+        >
         <div className="container-nino">
           {/* --- top row -------------------------------------------------- */}
           <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 md:h-20">
@@ -393,7 +404,8 @@ export default function Header({ categories }: { categories: Category[] }) {
             </form>
           </div>
         )}
-      </header>
+        </header>
+      </div>
 
       <MobileNav
         open={mobileOpen}

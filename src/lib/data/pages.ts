@@ -40,13 +40,13 @@ export const infoPages: InfoPage[] = [
         heading: { he: "עלויות", en: "Costs" },
         body: {
           he: [
-            "משלוח שליח: ₪29.",
-            "משלוח חינם בקנייה מעל ₪400.",
+            "משלוח שליח לכל הארץ: ₪30.",
+            "משלוח חינם בקנייה מעל ₪700.",
             "איסוף מהחנות: ללא עלות.",
           ],
           en: [
-            "Courier: ₪29.",
-            "Free shipping on orders over ₪400.",
+            "Courier throughout Israel: ₪30.",
+            "Free shipping on orders over ₪700.",
             "Store pickup: free.",
           ],
         },

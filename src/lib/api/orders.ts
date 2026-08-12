@@ -2,6 +2,7 @@ import "server-only";
 
 import { products } from "@/lib/data/catalog";
 import type { CartLine } from "@/lib/data/types";
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "@/lib/shipping";
 
 export interface OrderDraft {
   lines: CartLine[];
@@ -29,9 +30,6 @@ export interface OrderResult {
   total?: number;
   error?: string;
 }
-
-export const FREE_SHIPPING_THRESHOLD = 400;
-export const SHIPPING_COST = 29;
 
 /**
  * Creates an order.

@@ -39,6 +39,7 @@ export function tilesFromProducts(
   entries: {
     label: string;
     slug: string;
+    href?: string;
     product?: Product;
     overrideImage?: string | null;
   }[],
@@ -46,7 +47,7 @@ export function tilesFromProducts(
 ): Tile[] {
   return entries.map((e) => ({
     label: e.label,
-    href: localeHref(locale, `/category/${e.slug}`),
+    href: localeHref(locale, e.href ?? `/category/${e.slug}`),
     image:
       e.overrideImage ?? e.product?.images[0] ?? "/media/editorial-1.svg",
   }));

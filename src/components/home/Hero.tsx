@@ -7,8 +7,8 @@ import { formatNumber } from "@/lib/utils/format";
 
 /**
  * Full-bleed editorial hero: one campaign image, a centred serif headline and a
- * single call to action. The scrim only darkens the lower third so the garment
- * stays clean while the type keeps its contrast.
+ * single call to action. The site chrome overlays the image on the homepage,
+ * so this section intentionally fills the complete viewport.
  */
 export default function Hero({
   newCount,
@@ -21,23 +21,15 @@ export default function Hero({
 
   return (
     <section className="relative">
-      {/*
-        Fills the viewport. `svh` measures against the *small* viewport, so
-        mobile browsers that grow the chrome on scroll cannot crop the image —
-        `vh` would size to the tall state and clip the moment the bar appears.
-      */}
-      <div className="relative h-[calc(100svh-var(--chrome-h))] min-h-[560px] w-full overflow-hidden bg-tile">
+      <div className="relative h-svh min-h-[600px] w-full overflow-hidden bg-tile">
         <Image
-          src="/media/hero-main.jpg"
+          src="/media/HERO.png"
           alt={dict.home.heroTitle}
           fill
           priority
           fetchPriority="high"
           sizes="100vw"
-          /* Keep the campaign subject centred across desktop and mobile crops. */
-          /* Wide viewports trim this vertically. Holding the crop above centre
-             keeps the model's head in frame and sheds empty floor instead. */
-          className="object-cover object-[center_25%]"
+          className="object-cover object-center"
         />
 
         {/*

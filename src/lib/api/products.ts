@@ -163,19 +163,24 @@ export async function getAllProductSlugs(): Promise<string[]> {
   return list.map((p) => p.slug);
 }
 
+/** Localized copy for fixed merchandising slots, even before a category is active. */
+export function getCategoryLabel(slug: string, locale: "he" | "en"): string {
+  return categories.find((category) => category.slug === slug)?.title[locale] ?? slug;
+}
+
 /**
  * Navigation categories.
  *
- * The curated list in the demo catalog carries copy and grouping we cannot
- * derive from Shopify, so it stays authoritative for anything it already
- * describes. Product types that only exist upstream are appended, which keeps
- * a newly added Shopify category reachable instead of invisible.
+ * In a live store, only categories represented by current Shopify products are
+ * exposed. Selecting a product type in the admin therefore turns that category
+ * on automatically; empty/unselected categories stay out of navigation.
  */
 export async function getCategories(): Promise<Category[]> {
   if (!shopifyEnabled) return categories;
 
   const list = await getCatalog();
   const known = new Set(categories.map((c) => c.slug));
+  const active = new Set(list.map((product) => product.category));
 
   const discovered = new Map<string, Category>();
   for (const product of list) {
@@ -189,7 +194,14 @@ export async function getCategories(): Promise<Category[]> {
     });
   }
 
-  return [...categories, ...discovered.values()];
+  return [
+    ...categories.filter(
+      (category) => active.has(category.slug) && category.group !== "shoes"
+    ),
+    ...Array.from(discovered.values()).filter(
+      (category) => category.group !== "shoes"
+    ),
+  ];
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
