@@ -75,7 +75,7 @@ export default function Hero({
                 {/* White fill wipes in from the reading edge. */}
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 -z-10 origin-[inline-start] scale-x-0 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                  className="origin-reading-edge absolute inset-0 -z-10 scale-x-0 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
                 />
                 {dict.home.shopNow}
               </Link>

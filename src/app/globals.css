@@ -151,8 +151,9 @@
     cursor: pointer;
   }
 
-  /* A sheen that wipes across on hover. Origin is logical, so it travels
-     right-to-left in Hebrew and left-to-right in English. */
+  /* A sheen that wipes across on hover, travelling with the reading
+     direction. `transform-origin` has no logical keywords, so the edge is
+     pinned per-direction rather than with `inline-start`. */
   .btn::before {
     content: "";
     position: absolute;
@@ -161,8 +162,12 @@
     background: currentColor;
     opacity: 0.14;
     transform: scaleX(0);
-    transform-origin: inline-start;
+    transform-origin: left center;
     transition: transform 0.45s var(--ease-out-soft);
+  }
+
+  [dir="rtl"] .btn::before {
+    transform-origin: right center;
   }
 
   .btn:hover:not(:disabled)::before {
@@ -254,6 +259,16 @@
   /* Entrance for above-the-fold content, which has no scroll event to wait on. */
   .rise {
     animation: fade-up 0.9s var(--ease-out-soft) both;
+  }
+
+  /* Anchors a scaleX wipe to the reading edge. Needed because
+     `transform-origin` accepts no logical keywords. */
+  .origin-reading-edge {
+    transform-origin: left center;
+  }
+
+  [dir="rtl"] .origin-reading-edge {
+    transform-origin: right center;
   }
 
   .flip-rtl:where([dir="rtl"] *) {
