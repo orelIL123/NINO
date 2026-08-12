@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import Link from "next/link";
 
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -18,19 +18,38 @@ export default function Hero({
   locale: Locale;
 }) {
   const dict = getDictionary(locale);
+  const imageProps = {
+    alt: dict.home.heroTitle,
+    fill: true,
+    priority: true,
+    fetchPriority: "high" as const,
+    sizes: "100vw",
+  };
+  const { props: desktopHero } = getImageProps({
+    ...imageProps,
+    src: "/media/HERO.png",
+  });
+  const { props: mobileHero } = getImageProps({
+    ...imageProps,
+    src: "/media/hf_20260812_115455_2b31f661-6561-451e-8d0d-851333e77739.png",
+  });
 
   return (
     <section className="relative">
       <div className="relative h-svh min-h-[600px] w-full overflow-hidden bg-tile">
-        <Image
-          src="/media/HERO.png"
-          alt={dict.home.heroTitle}
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        <picture>
+          <source
+            media="(max-width: 767px)"
+            srcSet={mobileHero.srcSet}
+            sizes={mobileHero.sizes}
+          />
+          {/* `getImageProps` keeps both art-directed sources optimized by Next. */}
+          <img
+            {...desktopHero}
+            alt={dict.home.heroTitle}
+            className="object-cover object-center"
+          />
+        </picture>
 
         {/*
           Cinematic scrim. The garment is white and the studio backdrop is pale,
