@@ -23,7 +23,8 @@
 
 ```env
 SHOPIFY_STORE_DOMAIN=p9xvga-8t.myshopify.com
-SHOPIFY_ADMIN_ACCESS_TOKEN=<Admin API access token>
+SHOPIFY_CLIENT_ID=<Dev Dashboard client ID>
+SHOPIFY_CLIENT_SECRET=<Dev Dashboard client secret>
 SHOPIFY_API_VERSION=2026-01
 ADMIN_PANEL_PASSWORD=<סיסמה פרטית חזקה>
 ADMIN_SESSION_SECRET=<מפתח אקראי של לפחות 32 תווים>
@@ -37,7 +38,7 @@ openssl rand -base64 48
 
 ### הרשאות Shopify הנדרשות
 
-האפליקציה שמנפיקה את Admin API token צריכה את ההרשאות הבאות:
+אפליקציית ה־Dev Dashboard צריכה את ההרשאות הבאות:
 
 - `write_products`, `read_products`
 - `write_inventory`, `read_inventory`, `read_locations`
@@ -45,7 +46,8 @@ openssl rand -base64 48
 - `write_translations`, `read_translations`
 - `write_files`, `read_files`
 
-הטוקן נשאר בצד השרת בלבד. אסור לקרוא למשתנה שלו בשם שמתחיל ב־`NEXT_PUBLIC_`.
+ה־Client secret נשאר בצד השרת בלבד. השרת מחליף אותו לטוקן קצר־חיים ומחדש אותו
+אוטומטית. אסור לקרוא למשתני הסוד בשם שמתחיל ב־`NEXT_PUBLIC_`.
 
 ## שימוש
 
