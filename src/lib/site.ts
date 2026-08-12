@@ -1,8 +1,7 @@
 /**
  * Single place for the boutique's real-world details.
  *
- * TODO — replace the placeholders below with the real ones before going live:
- * phone, whatsapp (international format, no +), email, street address.
+ * The street address still needs confirmation from the merchant.
  */
 
 /**
@@ -34,10 +33,11 @@ export const SITE = {
   url: resolveSiteUrl(),
   city: { he: "נתיבות", en: "Netivot" },
   address: { he: "נתיבות", en: "Netivot, Israel" },
-  phone: "08-000-0000",
-  whatsapp: "972500000000",
-  email: "hello@nino-boutique.co.il",
-  instagram: "https://www.instagram.com/ninoboutique_n/",
+  phone: "+972 54-680-9924",
+  whatsapp: "972546809924",
+  email: "Efrattorgeman123@gmail.com",
+  instagram:
+    "https://www.instagram.com/ninoboutique_n?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
   instagramHandle: "@ninoboutique_n",
   hours: [
     { he: "ראשון – חמישי", en: "Sunday – Thursday", time: "10:00 – 21:00" },

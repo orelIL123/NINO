@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useStore } from "@/lib/store/StoreProvider";
 import { formatPrice } from "@/lib/utils/format";
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST } from "@/lib/shipping";
 import { CheckIcon, ShieldIcon } from "@/components/ui/Icons";
 
 type Method = "courier" | "pickup";
@@ -20,7 +21,10 @@ export default function CheckoutView() {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const shipping = method === "pickup" || subtotal >= 400 ? 0 : 29;
+  const shipping =
+    method === "pickup" || subtotal >= FREE_SHIPPING_THRESHOLD
+      ? 0
+      : SHIPPING_COST;
   const total = subtotal + shipping;
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -131,7 +135,7 @@ export default function CheckoutView() {
             <div className="grid gap-3 sm:grid-cols-2">
               {(
                 [
-                  { key: "courier", label: dict.checkout.courier, price: 29 },
+                  { key: "courier", label: dict.checkout.courier, price: SHIPPING_COST },
                   { key: "pickup", label: dict.checkout.pickup, price: 0 },
                 ] as const
               ).map((option) => (
@@ -164,7 +168,7 @@ export default function CheckoutView() {
                     {option.label}
                   </span>
                   <span className="text-xs text-ink-muted">
-                    {option.price === 0 || subtotal >= 400
+                    {option.price === 0 || subtotal >= FREE_SHIPPING_THRESHOLD
                       ? dict.cart.freeShipping
                       : formatPrice(option.price, locale)}
                   </span>

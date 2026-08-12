@@ -134,13 +134,6 @@ export default function Header({ categories }: { categories: Category[] }) {
         key: "shoes",
         label: dict.nav.shoes,
         href: href("/shoes"),
-        columns: [{ title: dict.nav.shoes, links: inGroup("shoes") }],
-        promo: {
-          title: dict.home.editorialTitle,
-          text: dict.home.panelShoes,
-          href: href("/shoes"),
-          image: "/media/editorial-2.svg",
-        },
       },
       {
         key: "sale",
