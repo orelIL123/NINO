@@ -5,12 +5,15 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Fades its children up as they scroll into view, once.
  *
- * The observer is disconnected on the first intersection — a reveal that
- * replays on every scroll past is distracting on a long product page.
+ * Deliberately uses a rAF-throttled scroll check rather than
+ * IntersectionObserver. The observer is the more fashionable tool, but it
+ * gives no way to tell "not intersecting yet" apart from "never going to
+ * fire" — and when it silently does not fire, every wrapped section stays at
+ * opacity 0 and the page looks empty. A rect check cannot fail that way: the
+ * worst case is a reveal that happens a frame late.
  *
- * If IntersectionObserver is unavailable the content is shown immediately
- * rather than left transparent; a missing animation is a far smaller failure
- * than a blank section.
+ * The element is also revealed if it is already above the viewport, so
+ * restoring a scroll position or deep-linking never leaves a gap.
  */
 export default function Reveal({
   children,
@@ -31,26 +34,44 @@ export default function Reveal({
     const node = ref.current;
     if (!node) return;
 
-    // Without an observer there is nothing to wait for, so reveal straight
-    // away by touching the DOM rather than scheduling another render.
-    if (typeof IntersectionObserver === "undefined") {
-      node.classList.add("reveal-in");
-      return;
-    }
+    let frame = 0;
+    let done = false;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
+    const stop = () => {
+      done = true;
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+
+    const check = () => {
+      frame = 0;
+      if (done) return;
+
+      const { top, bottom } = node.getBoundingClientRect();
+      // Trigger slightly before the top edge lands, so the motion completes
+      // as the section settles instead of after it is already being read.
+      const entered = top < window.innerHeight * 0.92 && bottom > 0;
+      const passed = bottom <= 0;
+
+      if (entered || passed) {
         setShown(true);
-        observer.disconnect();
-      },
-      // Trigger a little before the element is fully on screen so the motion
-      // finishes as it settles, instead of starting once it is already read.
-      { threshold: 0.08, rootMargin: "0px 0px -8% 0px" }
-    );
+        stop();
+      }
+    };
 
-    observer.observe(node);
-    return () => observer.disconnect();
+    const schedule = () => {
+      if (!frame && !done) frame = requestAnimationFrame(check);
+    };
+
+    // Defer the first check by a frame so the effect body stays free of a
+    // synchronous setState, and layout has settled before we measure.
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+
+    return stop;
   }, []);
 
   const Element = Tag as React.ElementType;
