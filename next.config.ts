@@ -4,8 +4,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   images: {
-    // Real product photography will live in Firebase Storage.
     remotePatterns: [
+      // Shopify serves all product photography from its own CDN.
+      { protocol: "https", hostname: "cdn.shopify.com" },
       { protocol: "https", hostname: "firebasestorage.googleapis.com" },
       { protocol: "https", hostname: "storage.googleapis.com" },
     ],

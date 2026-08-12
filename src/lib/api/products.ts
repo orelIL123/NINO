@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import {
   brands,
   categories,
@@ -14,15 +16,38 @@ import type {
   ProductQuery,
   SortKey,
 } from "@/lib/data/types";
+import { fetchProducts, shopifyEnabled } from "@/lib/shopify";
 
 /* -------------------------------------------------------------------------- */
 /*  DATA ACCESS LAYER                                                         */
 /*                                                                            */
-/*  Every function here is async on purpose. Today they read from the local    */
-/*  demo catalog; when Firestore is ready, swap the body of each function for  */
-/*  a Firestore query (see src/lib/firebase/README.md) and no page or          */
-/*  component has to be touched.                                              */
+/*  Reads the live Shopify catalog when the store is configured, and the local */
+/*  demo catalog otherwise. Filtering and sorting stay in memory either way,   */
+/*  so both sources behave identically and no page or component changes.      */
 /* -------------------------------------------------------------------------- */
+
+/** Upper bound on a single Storefront page — plenty for a boutique. */
+const CATALOG_PAGE_SIZE = 250;
+
+/**
+ * The product set every query below is built from.
+ *
+ * `cache` dedupes this within a single render pass; the Storefront client adds
+ * the cross-request HTTP cache on top. If Shopify is unreachable or the token
+ * is wrong we serve the demo catalog rather than failing the page — a
+ * storefront that renders stale products beats one that returns a 500.
+ */
+const getCatalog = cache(async (): Promise<Product[]> => {
+  if (!shopifyEnabled) return products;
+
+  try {
+    const live = await fetchProducts({ first: CATALOG_PAGE_SIZE });
+    return live.length ? live : products;
+  } catch (error) {
+    console.error("[catalog] Shopify read failed — serving demo catalog", error);
+    return products;
+  }
+});
 
 function sortProducts(list: Product[], sort: SortKey = "newest"): Product[] {
   const copy = [...list];
@@ -57,7 +82,7 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
     exclude,
   } = query;
 
-  let list = products;
+  let list = await getCatalog();
 
   if (group) {
     list =
@@ -82,8 +107,9 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
   if (search) {
     const q = search.trim().toLowerCase();
     if (q) {
+      const known = await getBrands();
       list = list.filter((p) => {
-        const brandName = brands.find((b) => b.slug === p.brand)?.name ?? "";
+        const brandName = known.find((b) => b.slug === p.brand)?.name ?? "";
         return [
           p.title.he,
           p.title.en,
@@ -105,22 +131,25 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  return products.find((p) => p.slug === slug) ?? null;
+  const list = await getCatalog();
+  return list.find((p) => p.slug === slug) ?? null;
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
   const set = new Set(slugs);
-  return products.filter((p) => set.has(p.slug));
+  const list = await getCatalog();
+  return list.filter((p) => set.has(p.slug));
 }
 
 export async function getRelatedProducts(
   product: Product,
   count = 4
 ): Promise<Product[]> {
-  const sameCategory = products.filter(
+  const list = await getCatalog();
+  const sameCategory = list.filter(
     (p) => p.category === product.category && p.slug !== product.slug
   );
-  const sameBrand = products.filter(
+  const sameBrand = list.filter(
     (p) =>
       p.brand === product.brand &&
       p.slug !== product.slug &&
@@ -130,23 +159,69 @@ export async function getRelatedProducts(
 }
 
 export async function getAllProductSlugs(): Promise<string[]> {
-  return products.map((p) => p.slug);
+  const list = await getCatalog();
+  return list.map((p) => p.slug);
 }
 
+/**
+ * Navigation categories.
+ *
+ * The curated list in the demo catalog carries copy and grouping we cannot
+ * derive from Shopify, so it stays authoritative for anything it already
+ * describes. Product types that only exist upstream are appended, which keeps
+ * a newly added Shopify category reachable instead of invisible.
+ */
 export async function getCategories(): Promise<Category[]> {
-  return categories;
+  if (!shopifyEnabled) return categories;
+
+  const list = await getCatalog();
+  const known = new Set(categories.map((c) => c.slug));
+
+  const discovered = new Map<string, Category>();
+  for (const product of list) {
+    if (known.has(product.category) || discovered.has(product.category)) continue;
+    const label = product.category.replace(/-/g, " ");
+    discovered.set(product.category, {
+      slug: product.category,
+      title: { he: label, en: label },
+      group: product.group,
+      gender: product.gender,
+    });
+  }
+
+  return [...categories, ...discovered.values()];
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  return categories.find((c) => c.slug === slug) ?? null;
+  const all = await getCategories();
+  return all.find((c) => c.slug === slug) ?? null;
 }
 
+/** Brands, extended with any Shopify vendor the demo catalog does not list. */
 export async function getBrands(): Promise<Brand[]> {
-  return brands;
+  if (!shopifyEnabled) return brands;
+
+  const list = await getCatalog();
+  const known = new Set(brands.map((b) => b.slug));
+
+  const discovered = new Map<string, Brand>();
+  for (const product of list) {
+    if (known.has(product.brand) || discovered.has(product.brand)) continue;
+    const name = product.brand.replace(/-/g, " ").toUpperCase();
+    discovered.set(product.brand, {
+      slug: product.brand,
+      name,
+      country: { he: "", en: "" },
+      description: { he: "", en: "" },
+    });
+  }
+
+  return [...brands, ...discovered.values()];
 }
 
 export async function getBrandBySlug(slug: string): Promise<Brand | null> {
-  return brands.find((b) => b.slug === slug) ?? null;
+  const all = await getBrands();
+  return all.find((b) => b.slug === slug) ?? null;
 }
 
 /** Facet values available for the filter sidebar, scoped to a product set. */
@@ -154,9 +229,10 @@ export async function getFacets(list: Product[]) {
   const brandSlugs = new Set(list.map((p) => p.brand));
   const sizeLabels = new Set(list.flatMap((p) => p.sizes.map((s) => s.label)));
   const colorKeys = new Set(list.map((p) => p.color.name.en.toLowerCase()));
+  const allBrands = await getBrands();
 
   return {
-    brands: brands.filter((b) => brandSlugs.has(b.slug)),
+    brands: allBrands.filter((b) => brandSlugs.has(b.slug)),
     sizes: Array.from(sizeLabels).sort((a, b) => {
       const order = ["XS", "S", "M", "L", "XL", "XXL", "ONE SIZE"];
       const ai = order.indexOf(a);
@@ -165,11 +241,28 @@ export async function getFacets(list: Product[]) {
       return Number(a) - Number(b);
     }),
     colors: colorList.filter((c) => colorKeys.has(c.name.en.toLowerCase())),
-    price: priceBounds,
+    price: priceRangeFor(list),
+  };
+}
+
+/** Slider bounds for the price facet, widened to round hundreds. */
+function priceRangeFor(list: Product[]): { min: number; max: number } {
+  if (!shopifyEnabled || !list.length) return priceBounds;
+
+  const prices = list.map((p) => p.price);
+  return {
+    min: Math.floor(Math.min(...prices) / 100) * 100,
+    max: Math.ceil(Math.max(...prices) / 100) * 100,
   };
 }
 
 export async function getNewItemsCount(): Promise<number> {
-  // Mirrors the "1,379 New Items" counter on the reference site.
-  return products.length * 26 + 51;
+  const list = await getCatalog();
+
+  // A live store reports what it actually carries. The demo catalog is too
+  // small to look like a real boutique, so it keeps the inflated counter that
+  // mirrors the reference site's "1,379 New Items".
+  if (shopifyEnabled) return list.filter((p) => p.badges.includes("new")).length;
+
+  return list.length * 26 + 51;
 }
