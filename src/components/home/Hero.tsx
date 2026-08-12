@@ -29,8 +29,8 @@ export default function Hero({
           priority
           fetchPriority="high"
           sizes="100vw"
-          /* Bias the crop upward so the graphic on the tee stays above the type. */
-          className="object-cover object-[center_22%]"
+          /* Keep the campaign subject centred across desktop and mobile crops. */
+          className="object-cover object-center"
         />
 
         {/*
