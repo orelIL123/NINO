@@ -41,6 +41,54 @@ export default function Header({ categories }: { categories: Category[] }) {
   const searchRef = useRef<HTMLInputElement>(null);
   const closeTimer = useRef<number | null>(null);
 
+  /**
+   * Retracts the bar while reading down the page and brings it back on the
+   * first upward scroll, or when the pointer reaches the top edge.
+   *
+   * Starts visible and only ever hides as a result of a scroll we observed, so
+   * if this never runs the navigation is simply always on screen.
+   */
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const read = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const goingDown = y > lastY.current;
+
+      // Keep it pinned over the top of the page, and ignore the rubber-band
+      // region so an overscroll bounce does not flicker the bar.
+      if (y < 140) setHidden(false);
+      else if (Math.abs(y - lastY.current) > 6) setHidden(goingDown);
+
+      lastY.current = y;
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(read);
+    };
+
+    // Reaching for the bar should always summon it back.
+    const onPointer = (e: PointerEvent) => {
+      if (e.clientY < 90) setHidden(false);
+    };
+
+    lastY.current = window.scrollY;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pointermove", onPointer, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pointermove", onPointer);
+    };
+  }, []);
+
+  // A menu or the search panel being open outranks the scroll direction.
+  const retracted = hidden && !openGroup && !searchOpen && !mobileOpen;
+
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
   }, [searchOpen]);
@@ -125,7 +173,9 @@ export default function Header({ categories }: { categories: Category[] }) {
       <AnnouncementBar />
 
       <header
-        className="sticky top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur supports-[backdrop-filter]:bg-canvas/85"
+        className={`sticky top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] supports-[backdrop-filter]:bg-canvas/85 ${
+          retracted ? "-translate-y-full" : "translate-y-0"
+        }`}
         onMouseLeave={scheduleClose}
       >
         <div className="container-nino">

@@ -28,6 +28,19 @@
 }
 
 @layer base {
+  /* Combined height of the announcement bar and the header. The hero
+     subtracts this so it lands exactly on the fold instead of pushing a
+     sliver of the next section into view. */
+  :root {
+    --chrome-h: 101px;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --chrome-h: 165px;
+    }
+  }
+
   * {
     border-color: var(--color-line);
   }

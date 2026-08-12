@@ -21,7 +21,12 @@ export default function Hero({
 
   return (
     <section className="relative">
-      <div className="relative h-[80vh] min-h-[540px] w-full overflow-hidden bg-tile md:h-[88vh]">
+      {/*
+        Fills the viewport. `svh` measures against the *small* viewport, so
+        mobile browsers that grow the chrome on scroll cannot crop the image —
+        `vh` would size to the tall state and clip the moment the bar appears.
+      */}
+      <div className="relative h-[calc(100svh-var(--chrome-h))] min-h-[560px] w-full overflow-hidden bg-tile">
         <Image
           src="/media/hero-main.jpg"
           alt={dict.home.heroTitle}
