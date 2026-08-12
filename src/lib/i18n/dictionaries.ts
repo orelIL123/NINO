@@ -156,7 +156,9 @@ const he = {
     text: "הצטרפו לרשימת התפוצה וקבלו ראשונים עדכונים על קולקציות חדשות ומבצעים.",
     placeholder: "כתובת אימייל",
     submit: "הצטרפות",
+    submitting: "רגע…",
     success: "תודה! נרשמתם בהצלחה.",
+    error: "משהו השתבש. נסו שוב בעוד רגע.",
   },
   footer: {
     shop: "קנייה",
@@ -189,6 +191,8 @@ const he = {
     yourName: "השם שלכם",
     yourMessage: "ההודעה שלכם",
     messageSent: "ההודעה נשלחה, נחזור אליכם בהקדם.",
+    messageSending: "שולח…",
+    messageFailed: "ההודעה לא נשלחה. נסו שוב, או דברו איתנו בוואטסאפ.",
   },
   common: {
     currency: "₪",
@@ -358,7 +362,9 @@ const en: typeof he = {
     text: "Join our list and be first to hear about new arrivals and offers.",
     placeholder: "Email address",
     submit: "Sign up",
+    submitting: "One moment…",
     success: "Thanks! You're on the list.",
+    error: "Something went wrong. Please try again in a moment.",
   },
   footer: {
     shop: "Shop",
@@ -391,6 +397,8 @@ const en: typeof he = {
     yourName: "Your name",
     yourMessage: "Your message",
     messageSent: "Message sent — we'll get back to you shortly.",
+    messageSending: "Sending…",
+    messageFailed: "The message didn't go through. Try again, or reach us on WhatsApp.",
   },
   common: {
     currency: "₪",

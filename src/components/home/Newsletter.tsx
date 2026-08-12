@@ -5,9 +5,27 @@ import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { CheckIcon } from "@/components/ui/Icons";
 
 export default function Newsletter() {
-  const { dict } = useLocale();
+  const { dict, locale } = useLocale();
   const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
+  const [company, setCompany] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
+    "idle"
+  );
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, locale, company }),
+      });
+      setStatus(res.ok ? "done" : "error");
+    } catch {
+      setStatus("error");
+    }
+  }
 
   return (
     <section className="container-nino py-14">
@@ -19,35 +37,58 @@ export default function Newsletter() {
           {dict.newsletter.text}
         </p>
 
-        {done ? (
-          <p className="mt-7 flex items-center justify-center gap-2 text-sm text-success">
+        {status === "done" ? (
+          <p
+            role="status"
+            className="mt-7 flex items-center justify-center gap-2 text-sm text-success"
+          >
             <CheckIcon size={18} />
             {dict.newsletter.success}
           </p>
         ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              // TODO: POST to /api/newsletter -> Firestore `newsletter` collection.
-              if (email.includes("@")) setDone(true);
-            }}
-            className="mt-7 flex flex-col gap-2 sm:flex-row"
-          >
-            <label htmlFor="newsletter-email" className="sr-only">
-              {dict.newsletter.placeholder}
-            </label>
-            <input
-              id="newsletter-email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={dict.newsletter.placeholder}
-              className="field flex-1 text-center sm:text-start"
-            />
-            <button type="submit" className="btn btn-primary shrink-0">
-              {dict.newsletter.submit}
-            </button>
+          <form onSubmit={handleSubmit} className="mt-7">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <label htmlFor="newsletter-email" className="sr-only">
+                {dict.newsletter.placeholder}
+              </label>
+              <input
+                id="newsletter-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={dict.newsletter.placeholder}
+                className="field flex-1 text-center sm:text-start"
+              />
+
+              {/* Honeypot — hidden from people, irresistible to bots. */}
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                className="absolute left-[-9999px] h-0 w-0 opacity-0"
+              />
+
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="btn btn-primary shrink-0 disabled:opacity-60"
+              >
+                {status === "sending"
+                  ? dict.newsletter.submitting
+                  : dict.newsletter.submit}
+              </button>
+            </div>
+
+            {status === "error" && (
+              <p role="alert" className="mt-3 text-sm text-sale">
+                {dict.newsletter.error}
+              </p>
+            )}
           </form>
         )}
       </div>
