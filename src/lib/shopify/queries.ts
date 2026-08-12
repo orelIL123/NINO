@@ -166,6 +166,9 @@ export const HOMEPAGE_COLLECTIONS_QUERY = /* GraphQL */ `
       title
       description
     }
+    metafield(namespace: "custom", key: "homepage_content") {
+      value
+    }
   }
 `;
 
