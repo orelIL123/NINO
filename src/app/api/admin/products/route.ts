@@ -349,11 +349,13 @@ export async function POST(request: Request) {
     const location = context.locations.nodes.find((item) => item.isActive);
     if (!location) throw new Error("No active Shopify inventory location was found");
 
-    const onlineStorePublication = context.publications.nodes.find(
-      (publication) => /online store/i.test(publication.name)
+    const storefrontPublications = context.publications.nodes.filter(
+      (publication) =>
+        /online store/i.test(publication.name) ||
+        /nino next\.js storefront/i.test(publication.name)
     );
-    if (draft.publish && !onlineStorePublication)
-      throw new Error("The Online Store publication was not found");
+    if (draft.publish && !storefrontPublications.length)
+      throw new Error("No storefront publication was found");
 
     const group = groupForProductType(draft.productType);
     const tags = [...new Set([group, draft.gender, ...draft.extraTags])];
@@ -443,7 +445,9 @@ export async function POST(request: Request) {
         publishablePublish: MutationErrors;
       }>(PRODUCT_PUBLISH_MUTATION, {
         id: created.id,
-        input: [{ publicationId: onlineStorePublication?.id }],
+        input: storefrontPublications.map((publication) => ({
+          publicationId: publication.id,
+        })),
       });
       assertNoUserErrors(
         published.publishablePublish.userErrors,
