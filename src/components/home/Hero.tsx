@@ -35,7 +35,9 @@ export default function Hero({
           fetchPriority="high"
           sizes="100vw"
           /* Keep the campaign subject centred across desktop and mobile crops. */
-          className="object-cover object-center"
+          /* Wide viewports trim this vertically. Holding the crop above centre
+             keeps the model's head in frame and sheds empty floor instead. */
+          className="object-cover object-[center_25%]"
         />
 
         {/*
