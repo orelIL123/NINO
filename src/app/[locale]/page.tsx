@@ -13,9 +13,26 @@ import { getCategories, getNewItemsCount, getProducts } from "@/lib/api/products
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { isLocale, localeHref } from "@/lib/i18n/config";
 import { SITE } from "@/lib/site";
+import {
+  fetchHomepageCollections,
+  shopifyEnabled,
+  type HomepageCollections,
+} from "@/lib/shopify";
 import { MapPinIcon, ReturnIcon, ShieldIcon, TruckIcon } from "@/components/ui/Icons";
 
 export const revalidate = 3600;
+
+async function getHomepageCollections(
+  locale: "he" | "en"
+): Promise<HomepageCollections | null> {
+  if (!shopifyEnabled) return null;
+  try {
+    return await fetchHomepageCollections(locale);
+  } catch (error) {
+    console.error("[homepage] Shopify collection content failed", error);
+    return null;
+  }
+}
 
 export default async function HomePage({
   params,
@@ -26,13 +43,14 @@ export default async function HomePage({
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
 
-  const [newArrivals, bestSellers, saleItems, newCount, categories] =
+  const [newArrivals, bestSellers, saleItems, newCount, categories, homepage] =
     await Promise.all([
       getProducts({ sort: "newest", limit: 10 }),
       getProducts({ sort: "popular", limit: 10 }),
       getProducts({ onSale: true, sort: "popular", limit: 10 }),
       getNewItemsCount(),
       getCategories(),
+      getHomepageCollections(locale),
     ]);
 
   const categoryLabel = (slug: string) =>
@@ -47,10 +65,30 @@ export default async function HomePage({
 
   const tiles = tilesFromProducts(
     [
-      { label: categoryLabel("tshirts"), slug: "tshirts", product: tee[0] },
-      { label: categoryLabel("outerwear"), slug: "outerwear", product: outer[0] },
-      { label: dict.nav.shoes, slug: "sneakers", product: sneaker[0] },
-      { label: dict.nav.accessories, slug: "bags", product: bag[0] },
+      {
+        label: categoryLabel("tshirts"),
+        slug: "tshirts",
+        product: tee[0],
+        overrideImage: homepage?.tshirts?.image?.url,
+      },
+      {
+        label: categoryLabel("outerwear"),
+        slug: "outerwear",
+        product: outer[0],
+        overrideImage: homepage?.outerwear?.image?.url,
+      },
+      {
+        label: dict.nav.shoes,
+        slug: "sneakers",
+        product: sneaker[0],
+        overrideImage: homepage?.shoes?.image?.url,
+      },
+      {
+        label: dict.nav.accessories,
+        slug: "bags",
+        product: bag[0],
+        overrideImage: homepage?.accessories?.image?.url,
+      },
     ],
     locale
   );
@@ -92,10 +130,10 @@ export default async function HomePage({
       </Reveal>
 
       <EditorialBanner
-        image="/media/editorial-1.svg"
-        eyebrow={dict.home.heroEyebrow}
-        title={dict.home.editorialTitle}
-        text={dict.home.editorialText}
+        image={homepage?.seasonal?.image?.url ?? "/media/editorial-1.svg"}
+        eyebrow={homepage?.seasonal?.seo.title ?? dict.home.heroEyebrow}
+        title={homepage?.seasonal?.title ?? dict.home.editorialTitle}
+        text={homepage?.seasonal?.description ?? dict.home.editorialText}
         cta={dict.nav.shopAll}
         href={localeHref(locale, "/category/new-in")}
       />

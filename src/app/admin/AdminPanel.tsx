@@ -9,6 +9,7 @@ import {
   groupForProductType,
   type ProductType,
 } from "@/lib/admin/product-conventions";
+import HomepageEditor from "./HomepageEditor";
 
 type UploadedImage = {
   id: string;
@@ -488,6 +489,8 @@ export default function AdminPanel({
             </button>
           </div>
         </form>
+
+        <HomepageEditor />
       </div>
     </main>
   );
