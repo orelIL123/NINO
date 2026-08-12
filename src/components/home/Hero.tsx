@@ -1,77 +1,64 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { brands } from "@/lib/data/catalog";
-import type { Product } from "@/lib/data/types";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { localeHref, type Locale } from "@/lib/i18n/config";
 import { formatNumber } from "@/lib/utils/format";
 
 /**
- * Split hero: a typographic block on one side, a rail of fresh arrivals on the
- * other — the same rhythm as the reference site's "1,379 New Items" opener.
+ * Full-bleed editorial hero: one campaign image, a centred serif headline and a
+ * single call to action. The scrim only darkens the lower third so the garment
+ * stays clean while the type keeps its contrast.
  */
 export default function Hero({
-  products,
   newCount,
   locale,
 }: {
-  products: Product[];
   newCount: number;
   locale: Locale;
 }) {
   const dict = getDictionary(locale);
 
   return (
-    <section className="border-b border-line">
-      <div className="container-nino grid items-center gap-8 py-10 lg:grid-cols-[minmax(240px,26%)_1fr] lg:gap-10 lg:py-14">
-        <div className="text-center lg:text-start">
-          <p className="eyebrow text-ink-muted">{dict.home.heroEyebrow}</p>
-          <p className="mt-3 font-display text-6xl leading-[0.95] font-light md:text-7xl">
-            {formatNumber(newCount, locale)}
-          </p>
-          <h1 className="font-display text-4xl leading-tight font-light md:text-5xl">
-            {dict.home.heroCountSuffix}
-          </h1>
-          <div className="mt-5 space-y-0.5 text-sm text-ink-soft">
-            <p>{dict.home.heroLine1}</p>
-            <p>{dict.home.heroLine2}</p>
-            <p>{dict.home.heroLine3}</p>
-          </div>
-          <Link
-            href={localeHref(locale, "/category/new-in")}
-            className="link-underline mt-7 inline-block text-xs tracking-[0.16em] uppercase"
-          >
-            {dict.home.shopNow}
-          </Link>
-        </div>
+    <section className="relative">
+      <div className="relative h-[78vh] min-h-[500px] w-full overflow-hidden bg-tile md:h-[86vh]">
+        <Image
+          src="/media/hero-main.jpg"
+          alt={dict.home.heroTitle}
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-center"
+        />
 
-        <div className="hide-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-4 lg:overflow-visible lg:px-0">
-          {products.slice(0, 5).map((product, i) => {
-            const brand = brands.find((b) => b.slug === product.brand);
-            return (
-              <Link
-                key={product.slug}
-                href={localeHref(locale, `/product/${product.slug}`)}
-                className="group w-[44vw] shrink-0 snap-start sm:w-[30vw] lg:w-auto"
-              >
-                <div className="relative aspect-3/4 overflow-hidden bg-tile">
-                  <Image
-                    src={product.images[0]}
-                    alt={product.title[locale]}
-                    fill
-                    sizes="(min-width: 1024px) 16vw, 44vw"
-                    priority={i < 3}
-                    fetchPriority={i === 0 ? "high" : undefined}
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                  />
-                </div>
-                <p className="eyebrow mt-3 text-center text-ink-soft">
-                  {brand?.name}
-                </p>
-              </Link>
-            );
-          })}
+        {/* Legibility scrim — bottom-weighted so the image reads clean up top. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent"
+        />
+
+        <div className="absolute inset-x-0 bottom-0 pb-12 md:pb-20">
+          <div className="container-nino text-center text-white">
+            <p className="eyebrow text-white/75">
+              {formatNumber(newCount, locale)} · {dict.home.heroCountSuffix}
+            </p>
+
+            <h1 className="font-display mt-4 text-4xl leading-[1.1] font-light text-balance md:text-6xl lg:text-7xl">
+              {dict.home.heroTitle}
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-md text-sm text-white/85 md:text-base">
+              {dict.home.heroSubtitle}
+            </p>
+
+            <Link
+              href={localeHref(locale, "/category/new-in")}
+              className="mt-8 inline-block border border-white/80 px-10 py-3.5 text-xs tracking-[0.22em] text-white uppercase transition-colors duration-300 hover:bg-white hover:text-ink focus-visible:bg-white focus-visible:text-ink"
+            >
+              {dict.home.shopNow}
+            </Link>
+          </div>
         </div>
       </div>
     </section>

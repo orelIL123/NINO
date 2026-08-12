@@ -34,6 +34,8 @@ const he = {
   },
   home: {
     heroEyebrow: "קולקציית העונה",
+    heroTitle: "הקולקציה החדשה",
+    heroSubtitle: "ביגוד ונעליים ממותגים נבחרים, נחתו השבוע בבוטיק",
     heroCountSuffix: "פריטים חדשים",
     heroLine1: "ביגוד ונעליים",
     heroLine2: "ממותגים נבחרים",
@@ -234,6 +236,8 @@ const en: typeof he = {
   },
   home: {
     heroEyebrow: "This season",
+    heroTitle: "The New Collection",
+    heroSubtitle: "Curated clothing and footwear, landed this week at the boutique",
     heroCountSuffix: "New Items",
     heroLine1: "Curated clothing",
     heroLine2: "and footwear",

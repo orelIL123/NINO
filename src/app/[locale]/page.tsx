@@ -31,7 +31,6 @@ export default async function HomePage({
   const dict = getDictionary(locale);
 
   const [
-    heroProducts,
     newArrivals,
     bestSellers,
     saleItems,
@@ -39,7 +38,6 @@ export default async function HomePage({
     newCount,
     categories,
   ] = await Promise.all([
-    getProducts({ group: "new", limit: 5, sort: "newest" }),
     getProducts({ sort: "newest", limit: 10 }),
     getProducts({ sort: "popular", limit: 10 }),
     getProducts({ onSale: true, sort: "popular", limit: 10 }),
@@ -77,7 +75,7 @@ export default async function HomePage({
 
   return (
     <>
-      <Hero products={heroProducts} newCount={newCount} locale={locale} />
+      <Hero newCount={newCount} locale={locale} />
 
       {/* New arrivals ---------------------------------------------------- */}
       <section className="container-nino py-14">
