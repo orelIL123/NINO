@@ -10,6 +10,7 @@ import {
   type ProductType,
 } from "@/lib/admin/product-conventions";
 import HomepageEditor from "./HomepageEditor";
+import ExistingProducts from "./ExistingProducts";
 
 type UploadedImage = {
   id: string;
@@ -75,6 +76,7 @@ export default function AdminPanel({
   const imagesRef = useRef<UploadedImage[]>([]);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState("");
+  const [productsVersion, setProductsVersion] = useState(0);
   const [result, setResult] = useState<
     | { ok: true; title: string; adminUrl?: string; warnings: string[] }
     | { ok: false; error: string; partialTitle?: string }
@@ -246,6 +248,7 @@ export default function AdminPanel({
       setImages([]);
       setProductType("T-shirts");
       setSizes(DEFAULT_SIZES.clothing);
+      setProductsVersion((version) => version + 1);
     } catch (error) {
       setResult({
         ok: false,
@@ -322,7 +325,19 @@ export default function AdminPanel({
           <p className="text-xs font-semibold tracking-[0.16em] text-black/40 uppercase">
             Shopify Product Admin
           </p>
-          <h1 className="mt-2 text-3xl font-bold md:text-4xl">הוספת מוצר חדש</h1>
+          <h1 className="mt-2 text-3xl font-bold md:text-4xl">ניהול מוצרים</h1>
+          <p className="mt-2 text-black/55">
+            כל המוצרים הקיימים ב־Shopify, והוספת מוצרים חדשים במקום אחד.
+          </p>
+        </div>
+
+        <ExistingProducts refreshKey={productsVersion} />
+
+        <div className="mb-6 mt-14">
+          <p className="text-xs font-semibold tracking-[0.16em] text-black/40 uppercase">
+            New product
+          </p>
+          <h2 className="mt-2 text-3xl font-bold">הוספת מוצר חדש</h2>
           <p className="mt-2 text-black/55">
             ממלאים, מעלים עד 3 תמונות — והמוצר נכנס ל־Shopify עם הקטגוריות הנכונות.
           </p>

@@ -34,6 +34,35 @@ const ADMIN_CONTEXT_QUERY = /* GraphQL */ `
   }
 `;
 
+const ADMIN_PRODUCTS_QUERY = /* GraphQL */ `
+  query AdminProducts($first: Int!, $after: String) {
+    products(first: $first, after: $after, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        id
+        handle
+        title
+        vendor
+        productType
+        status
+        totalInventory
+        updatedAt
+        featuredMedia {
+          preview {
+            image {
+              url
+              altText
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+`;
+
 const PRODUCT_CREATE_MUTATION = /* GraphQL */ `
   mutation CreateProduct(
     $product: ProductCreateInput!
@@ -155,6 +184,25 @@ const TRANSLATIONS_REGISTER_MUTATION = /* GraphQL */ `
 interface AdminContext {
   locations: { nodes: Array<{ id: string; name: string; isActive: boolean }> };
   publications: { nodes: Array<{ id: string; name: string }> };
+}
+
+interface AdminProductListResponse {
+  products: {
+    nodes: Array<{
+      id: string;
+      handle: string;
+      title: string;
+      vendor: string;
+      productType: string;
+      status: string;
+      totalInventory: number;
+      updatedAt: string;
+      featuredMedia: {
+        preview: { image: { url: string; altText: string | null } | null } | null;
+      } | null;
+    }>;
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+  };
 }
 
 interface ProductCreateResponse {
@@ -282,6 +330,57 @@ function parseDraft(body: unknown): AdminProductDraft | null {
     publish: input.publish !== false,
     media,
   };
+}
+
+function productAdminUrl(productId: string): string | null {
+  const numericId = productId.split("/").pop();
+  const shopHandle = process.env.SHOPIFY_STORE_DOMAIN?.split(".")[0];
+  return shopHandle && numericId
+    ? `https://admin.shopify.com/store/${shopHandle}/products/${numericId}`
+    : null;
+}
+
+export async function GET() {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const products: AdminProductListResponse["products"]["nodes"] = [];
+    let after: string | null = null;
+    let hasNextPage = true;
+
+    while (hasNextPage && products.length < 500) {
+      const data: AdminProductListResponse =
+        await shopifyAdmin<AdminProductListResponse>(ADMIN_PRODUCTS_QUERY, {
+          first: 100,
+          after,
+        });
+      products.push(...data.products.nodes);
+      hasNextPage = data.products.pageInfo.hasNextPage;
+      after = data.products.pageInfo.endCursor;
+    }
+
+    return NextResponse.json({
+      ok: true,
+      products: products.map((product) => ({
+        ...product,
+        image: product.featuredMedia?.preview?.image ?? null,
+        featuredMedia: undefined,
+        adminUrl: productAdminUrl(product.id),
+      })),
+      truncated: hasNextPage,
+    });
+  } catch (error) {
+    console.error("[admin/products list]", error);
+    return NextResponse.json(
+      {
+        ok: false,
+        error: error instanceof Error ? error.message : "products_load_failed",
+      },
+      { status: 502 }
+    );
+  }
 }
 
 async function registerHebrewTranslations(
@@ -457,8 +556,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const numericId = created.id.split("/").pop();
-    const shopHandle = process.env.SHOPIFY_STORE_DOMAIN?.split(".")[0];
     if (draft.publish) {
       revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
     }
@@ -466,10 +563,7 @@ export async function POST(request: Request) {
       ok: true,
       product: {
         ...created,
-        adminUrl:
-          shopHandle && numericId
-            ? `https://admin.shopify.com/store/${shopHandle}/products/${numericId}`
-            : null,
+        adminUrl: productAdminUrl(created.id),
       },
       warnings,
     });
