@@ -47,7 +47,7 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
           title
           sku
           availableForSale
-          quantityAvailable
+          quantityAvailable @include(if: $includeInventory)
           selectedOptions {
             name
             value
@@ -82,6 +82,7 @@ export const PRODUCTS_QUERY = /* GraphQL */ `
     $sortKey: ProductSortKeys
     $reverse: Boolean
     $language: LanguageCode
+    $includeInventory: Boolean!
   ) @inContext(language: $language) {
     products(
       first: $first
@@ -100,7 +101,11 @@ export const PRODUCTS_QUERY = /* GraphQL */ `
 
 export const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
   ${PRODUCT_FRAGMENT}
-  query ProductByHandle($handle: String!, $language: LanguageCode)
+  query ProductByHandle(
+    $handle: String!
+    $language: LanguageCode
+    $includeInventory: Boolean!
+  )
   @inContext(language: $language) {
     product(handle: $handle) {
       ...ProductFields

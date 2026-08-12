@@ -17,6 +17,7 @@ const API_VERSION = process.env.SHOPIFY_API_VERSION ?? "2026-01";
 
 /** Tokenless Storefront access supports catalog, search, collections and carts. */
 export const shopifyEnabled = Boolean(DOMAIN);
+export const storefrontTokenEnabled = Boolean(TOKEN);
 
 export class ShopifyError extends Error {
   constructor(
