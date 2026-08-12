@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 import { isAdminAuthenticated, isSameOrigin } from "@/lib/admin/auth";
 import {
@@ -11,6 +12,7 @@ import {
   shopifyAdmin,
   type ShopifyUserError,
 } from "@/lib/shopify/admin";
+import { SHOPIFY_CATALOG_CACHE_TAG } from "@/lib/shopify/cache";
 
 export const runtime = "nodejs";
 
@@ -457,6 +459,9 @@ export async function POST(request: Request) {
 
     const numericId = created.id.split("/").pop();
     const shopHandle = process.env.SHOPIFY_STORE_DOMAIN?.split(".")[0];
+    if (draft.publish) {
+      revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
+    }
     return NextResponse.json({
       ok: true,
       product: {
