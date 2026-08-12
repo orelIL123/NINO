@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 /**
- * The wordmark. Letter-spacing adds trailing space after the last character,
- * so an equal padding on the leading side keeps it optically centred.
+ * NINO Boutique Logo - elegant serif branding
  */
 export default function Logo({
   href,
@@ -14,18 +13,49 @@ export default function Logo({
   size?: "sm" | "md" | "lg";
 }) {
   const sizes = {
-    sm: "text-lg tracking-[0.42em] ps-[0.42em]",
-    md: "text-xl md:text-3xl tracking-[0.5em] ps-[0.5em] md:tracking-[0.6em] md:ps-[0.6em]",
-    lg: "text-3xl md:text-5xl tracking-[0.55em] ps-[0.55em] md:tracking-[0.7em] md:ps-[0.7em]",
+    sm: "h-8 w-auto",
+    md: "h-12 md:h-16 w-auto",
+    lg: "h-20 md:h-28 w-auto",
   } as const;
 
   return (
     <Link
       href={href}
-      aria-label="NINO"
-      className={`inline-block font-light leading-none text-ink select-none ${sizes[size]} ${className}`}
+      aria-label="NINO Boutique"
+      className={`inline-block select-none ${className}`}
     >
-      <span aria-hidden="true">NINO</span>
+      <svg
+        viewBox="0 0 400 200"
+        className={`${sizes[size]} text-ink`}
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <style>
+            {`.nino-text { font-family: 'Georgia', 'Garamond', serif; font-weight: 400; }
+              .nino-main { font-size: 72px; letter-spacing: 8px; }
+              .nino-sub { font-size: 36px; letter-spacing: 4px; font-weight: 300; }`}
+          </style>
+        </defs>
+        <text
+          x="200"
+          y="90"
+          textAnchor="middle"
+          className="nino-text nino-main"
+          fill="currentColor"
+        >
+          NINO
+        </text>
+        <text
+          x="200"
+          y="140"
+          textAnchor="middle"
+          className="nino-text nino-sub"
+          fill="currentColor"
+        >
+          BOUTIQUE
+        </text>
+      </svg>
     </Link>
   );
 }

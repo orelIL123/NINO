@@ -1,0 +1,20 @@
+<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- NINO BOUTIQUE Logo -->
+  <defs>
+    <style>
+      .nino-text { font-family: 'Georgia', serif; font-weight: 400; }
+      .nino-main { font-size: 72px; letter-spacing: 8px; }
+      .nino-sub { font-size: 36px; letter-spacing: 4px; font-weight: 300; }
+    </style>
+  </defs>
+
+  <!-- Main text: NINO -->
+  <text x="200" y="90" text-anchor="middle" class="nino-text nino-main" fill="currentColor">
+    NINO
+  </text>
+
+  <!-- Sub text: BOUTIQUE -->
+  <text x="200" y="140" text-anchor="middle" class="nino-text nino-sub" fill="currentColor">
+    BOUTIQUE
+  </text>
+</svg>
