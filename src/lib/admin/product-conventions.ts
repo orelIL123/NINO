@@ -7,6 +7,12 @@ export const PRODUCT_TYPES = [
   "Jeans",
   "Shorts",
   "Jackets & coats",
+  "Tailored trousers",
+  "Bermudas",
+  "Swimwear",
+  "Suits",
+  "Short-sleeve shirt sets",
+  "Linen trousers",
   "Sneakers",
   "Boots",
   "Sandals & slides",
@@ -15,6 +21,7 @@ export const PRODUCT_TYPES = [
   "Belts",
   "Sunglasses",
   "Scarves",
+  "Perfumes",
 ] as const;
 
 export type ProductType = (typeof PRODUCT_TYPES)[number];
@@ -51,6 +58,7 @@ const ACCESSORIES = new Set<ProductType>([
   "Belts",
   "Sunglasses",
   "Scarves",
+  "Perfumes",
 ]);
 
 export function groupForProductType(type: ProductType): ProductGroup {

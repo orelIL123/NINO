@@ -65,13 +65,15 @@ export const infoPages: InfoPage[] = [
         heading: { he: "התנאים", en: "The terms" },
         body: {
           he: [
-            "ניתן להחזיר או להחליף תוך 14 יום מקבלת ההזמנה.",
+            "החזר כספי אפשרי עד שני ימי עסקים ממועד קבלת ההזמנה.",
+            "החלפה אפשרית עד שבעה ימים ממועד קבלת ההזמנה.",
             "הפריט צריך להיות ללא שימוש, עם התווית המקורית.",
             "יש לצרף חשבונית או אישור הזמנה.",
             "פריטי הלבשה תחתונה ובגדי ים אינם ניתנים להחזרה מטעמי היגיינה.",
           ],
           en: [
-            "Returns and exchanges within 14 days of delivery.",
+            "Refunds are available within two business days of delivery.",
+            "Exchanges are available within seven days of delivery.",
             "Items must be unworn with the original tag attached.",
             "Please include the invoice or order confirmation.",
             "Underwear and swimwear cannot be returned for hygiene reasons.",
@@ -84,12 +86,12 @@ export const infoPages: InfoPage[] = [
           he: [
             "הכי פשוט: להביא את הפריט לחנות בנתיבות.",
             "לחלופין, כתבו לנו בוואטסאפ ונתאם איסוף.",
-            "הזיכוי מבוצע לאמצעי התשלום המקורי תוך 7 ימי עסקים.",
+            "הזיכוי מבוצע לאמצעי התשלום המקורי עד שני ימי עסקים.",
           ],
           en: [
             "Simplest: bring the item to the store in Netivot.",
             "Or message us on WhatsApp and we'll arrange a pickup.",
-            "Refunds are issued to the original payment method within 7 business days.",
+            "Refunds are issued to the original payment method within two business days.",
           ],
         },
       },
@@ -138,7 +140,7 @@ export const infoPages: InfoPage[] = [
         heading: { he: "כללי", en: "General" },
         body: {
           he: [
-            "האתר מופעל על ידי בוטיק NINO, נתיבות.",
+            "האתר מופעל על ידי NINO חנות בוטיק, עוסק מורשה 316476308, נתיבות.",
             "המחירים באתר כוללים מע״מ ונקובים בשקלים חדשים.",
             "התמונות להמחשה בלבד; ייתכנו הבדלי גוון בין מסכים שונים.",
             "הבוטיק רשאי לעדכן מחירים ומלאי בכל עת.",

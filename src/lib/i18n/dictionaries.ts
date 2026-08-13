@@ -9,7 +9,7 @@ const he = {
   },
   announcement: {
     shipping: "משלוח חינם בקנייה מעל ₪700",
-    returns: "החזרה והחלפה תוך 14 יום",
+    returns: "החזר כספי עד 2 ימי עסקים · החלפה עד 7 ימים",
     store: "איסוף עצמי מהחנות בנתיבות",
   },
   nav: {
@@ -176,7 +176,7 @@ const he = {
     rights: "כל הזכויות שמורות",
     payments: "אמצעי תשלום",
     address: "נתיבות",
-    hours: "א׳–ה׳ 10:00–21:00 · ו׳ 09:00–14:00",
+    hours: "כל יום 10:00–21:00",
   },
   pages: {
     aboutTitle: "אודות NINO",
@@ -215,7 +215,7 @@ const en: typeof he = {
   },
   announcement: {
     shipping: "Free shipping on orders over ₪700",
-    returns: "14-day returns & exchanges",
+    returns: "Refund within 2 business days · exchanges within 7 days",
     store: "Free pickup at our Netivot store",
   },
   nav: {
@@ -382,7 +382,7 @@ const en: typeof he = {
     rights: "All rights reserved",
     payments: "Payment methods",
     address: "Netivot, Israel",
-    hours: "Sun–Thu 10:00–21:00 · Fri 09:00–14:00",
+    hours: "Every day 10:00–21:00",
   },
   pages: {
     aboutTitle: "About NINO",
