@@ -266,6 +266,7 @@ function parseDraft(body: unknown): AdminProductDraft | null {
   const title = normalizeText(input.title, 255);
   const vendor = normalizeText(input.vendor, 255);
   const productType = normalizeText(input.productType, 80);
+  const merchandisingCategory = normalizeText(input.merchandisingCategory, 80);
   const color = normalizeText(input.color, 80);
   const price = Number(input.price);
   const compareAtPrice = input.compareAtPrice
@@ -319,6 +320,7 @@ function parseDraft(body: unknown): AdminProductDraft | null {
     descriptionHe: normalizeText(input.descriptionHe, 10000) || undefined,
     vendor,
     productType,
+    merchandisingCategory: merchandisingCategory || undefined,
     gender: input.gender,
     extraTags,
     sizes,
@@ -459,7 +461,7 @@ export async function POST(request: Request) {
       throw new Error("No storefront publication was found");
 
     const group = groupForProductType(draft.productType);
-    const tags = [...new Set([group, draft.gender, ...draft.extraTags])];
+    const tags = [...new Set([group, draft.gender, ...(draft.merchandisingCategory ? [`category:${draft.merchandisingCategory}`] : []), ...draft.extraTags])];
     const product = await shopifyAdmin<ProductCreateResponse>(
       PRODUCT_CREATE_MUTATION,
       {

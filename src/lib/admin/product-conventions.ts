@@ -7,12 +7,6 @@ export const PRODUCT_TYPES = [
   "Jeans",
   "Shorts",
   "Jackets & coats",
-  "Tailored trousers",
-  "Bermudas",
-  "Swimwear",
-  "Suits",
-  "Short-sleeve shirt sets",
-  "Linen trousers",
   "Sneakers",
   "Boots",
   "Sandals & slides",
@@ -21,12 +15,26 @@ export const PRODUCT_TYPES = [
   "Belts",
   "Sunglasses",
   "Scarves",
-  "Perfumes",
 ] as const;
 
 export type ProductType = (typeof PRODUCT_TYPES)[number];
 export type ProductGroup = "clothing" | "shoes" | "accessories";
 export type ProductGender = "men" | "women";
+
+export const MERCHANDISING_CATEGORIES = [
+  { slug: "tshirts", label: "טי-שירט", type: "T-shirts" },
+  { slug: "shirts", label: "חולצות", type: "Shirts" },
+  { slug: "tailored-trousers", label: "מכנס אלגנט", type: "Trousers" },
+  { slug: "shorts", label: "מכנסיים קצרים", type: "Shorts" },
+  { slug: "bermudas", label: "ברמודות", type: "Shorts" },
+  { slug: "swimwear", label: "בגדי ים", type: "Shorts" },
+  { slug: "jeans", label: "ג׳ינסים", type: "Jeans" },
+  { slug: "hoodies", label: "קפוצ׳ונים", type: "Hoodies & sweats" },
+  { slug: "suits", label: "חליפות", type: "Jackets & coats" },
+  { slug: "short-sleeve-shirt-sets", label: "חליפות מכופתר קצרות", type: "Shirts" },
+  { slug: "linen-trousers", label: "מכנסי פשתן", type: "Trousers" },
+  { slug: "perfumes", label: "בשמים", type: "Bags" },
+] as const;
 
 export const PRODUCT_COLORS = [
   { value: "Black", label: "שחור", hex: "#1c1c1c" },
@@ -58,7 +66,6 @@ const ACCESSORIES = new Set<ProductType>([
   "Belts",
   "Sunglasses",
   "Scarves",
-  "Perfumes",
 ]);
 
 export function groupForProductType(type: ProductType): ProductGroup {
@@ -84,6 +91,7 @@ export interface AdminProductDraft {
   descriptionHe?: string;
   vendor: string;
   productType: ProductType;
+  merchandisingCategory?: string;
   gender: ProductGender;
   extraTags: Array<"new" | "bestseller">;
   sizes: string[];
