@@ -7,6 +7,8 @@ import "../globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
+import WelcomePopup from "@/components/layout/WelcomePopup";
+import { fetchWelcomePopup } from "@/lib/shopify/popup";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { StoreProvider } from "@/lib/store/StoreProvider";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -118,7 +120,10 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   const dict = getDictionary(locale);
-  const categories = await getCategories();
+  const [categories, popup] = await Promise.all([
+    getCategories(),
+    fetchWelcomePopup(),
+  ]);
 
   return (
     <html
@@ -142,6 +147,18 @@ export default async function LocaleLayout({
             </main>
             <Footer />
             <CartDrawer />
+            {popup && (
+              <WelcomePopup
+                locale={locale}
+                content={{
+                  title: popup.title[locale],
+                  body: popup.body[locale],
+                  ctaLabel: popup.ctaLabel[locale],
+                  ctaHref: popup.ctaHref,
+                  version: popup.version,
+                }}
+              />
+            )}
           </StoreProvider>
         </LocaleProvider>
       </body>

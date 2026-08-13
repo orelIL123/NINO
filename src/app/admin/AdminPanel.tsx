@@ -11,6 +11,7 @@ import {
 } from "@/lib/admin/product-conventions";
 import HomepageEditor from "./HomepageEditor";
 import ExistingProducts from "./ExistingProducts";
+import PopupEditor from "./PopupEditor";
 
 type UploadedImage = {
   id: string;
@@ -506,6 +507,8 @@ export default function AdminPanel({
         </form>
 
         <HomepageEditor />
+
+        <PopupEditor />
       </div>
     </main>
   );
