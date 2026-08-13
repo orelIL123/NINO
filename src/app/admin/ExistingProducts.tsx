@@ -11,6 +11,13 @@ type ExistingProduct = {
   productType: string;
   status: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
   totalInventory: number;
+  variants: {
+    nodes: Array<{
+      title: string;
+      inventoryQuantity: number;
+      selectedOptions: Array<{ name: string; value: string }>;
+    }>;
+  };
   updatedAt: string;
   image: { url: string; altText: string | null } | null;
   adminUrl: string | null;
@@ -146,8 +153,25 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
                     {[product.vendor, product.productType].filter(Boolean).join(" · ") || "ללא סיווג"}
                   </p>
                   <p className="mt-2 text-xs text-black/60">
-                    מלאי כולל: <strong>{product.totalInventory}</strong>
+                    מלאי המוצר: <strong>{product.totalInventory}</strong>
                   </p>
+                  {product.variants.nodes.length > 0 && (
+                    <div className="mt-2 space-y-0.5 text-[11px] text-black/55">
+                      {product.variants.nodes.map((variant) => {
+                        const color = variant.selectedOptions.find((option) =>
+                          ["color", "colour", "צבע"].includes(option.name.toLowerCase())
+                        )?.value;
+                        const size = variant.selectedOptions.find((option) =>
+                          ["size", "מידה"].includes(option.name.toLowerCase())
+                        )?.value;
+                        return (
+                          <p key={variant.title}>
+                            {[color, size].filter(Boolean).join(" · ") || variant.title}: {variant.inventoryQuantity}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  )}
                   {product.adminUrl && (
                     <a
                       href={product.adminUrl}

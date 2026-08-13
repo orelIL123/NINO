@@ -441,7 +441,7 @@ export default function AdminPanel({
             </div>
           </Section>
 
-          <Section title="מידות, צבע ומלאי" subtitle="המלאי שיוזן יחול על כל מידה.">
+          <Section title="מידות, צבע ומלאי" subtitle="המלאי שייך למוצר ולצבע שנבחרו, והוא יוזן לכל מידה של המוצר הזה בלבד.">
             <div className="grid gap-5 md:grid-cols-2">
               <label className="md:col-span-2">
                 <span className={labelClass}>מידות — מופרדות בפסיק</span>
@@ -463,7 +463,7 @@ export default function AdminPanel({
                   ))}
                 </select>
               </label>
-              <Field label="מלאי לכל מידה" name="stock" type="number" defaultValue="12" min="0" required />
+              <Field label="מלאי למוצר/צבע הזה" name="stock" type="number" defaultValue="12" min="0" required />
               <Field label="מחיר ₪" name="price" type="number" step="0.01" min="0.01" defaultValue="149" required />
               <Field label="מחיר לפני הנחה ₪" name="compareAtPrice" type="number" step="0.01" min="0.01" />
               <Field label="קידומת SKU (רשות)" name="skuPrefix" placeholder="NINO-DACH" />

@@ -45,6 +45,16 @@ const ADMIN_PRODUCTS_QUERY = /* GraphQL */ `
         productType
         status
         totalInventory
+        variants(first: 100) {
+          nodes {
+            title
+            inventoryQuantity
+            selectedOptions {
+              name
+              value
+            }
+          }
+        }
         updatedAt
         featuredMedia {
           preview {
@@ -196,6 +206,13 @@ interface AdminProductListResponse {
       productType: string;
       status: string;
       totalInventory: number;
+      variants: {
+        nodes: Array<{
+          title: string;
+          inventoryQuantity: number;
+          selectedOptions: Array<{ name: string; value: string }>;
+        }>;
+      };
       updatedAt: string;
       featuredMedia: {
         preview: { image: { url: string; altText: string | null } | null } | null;
