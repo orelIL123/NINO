@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { getInfoPage, infoPages } from "@/lib/data/pages";
 import { isLocale, locales } from "@/lib/i18n/config";
+import AccessibilityReportForm from "@/components/layout/AccessibilityReportForm";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
@@ -54,6 +55,7 @@ export default async function InfoPage({ params }: { params: Params }) {
           </section>
         ))}
       </div>
+      {slug === "accessibility" && <AccessibilityReportForm />}
     </article>
   );
 }

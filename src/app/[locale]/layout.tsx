@@ -8,6 +8,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import WelcomePopup from "@/components/layout/WelcomePopup";
+import CookieConsent from "@/components/layout/CookieConsent";
 import { fetchWelcomePopup } from "@/lib/shopify/popup";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { StoreProvider } from "@/lib/store/StoreProvider";
@@ -147,6 +148,7 @@ export default async function LocaleLayout({
             </main>
             <Footer />
             <CartDrawer />
+            <CookieConsent />
             {popup && (
               <WelcomePopup
                 locale={locale}

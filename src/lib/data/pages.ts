@@ -171,32 +171,78 @@ export const infoPages: InfoPage[] = [
   {
     slug: "privacy",
     title: { he: "מדיניות פרטיות", en: "Privacy policy" },
+    intro: {
+      he: "מדיניות זו מסבירה איזה מידע NINO חנות בוטיק אוספת, מדוע, ואיך ניתן לפנות אלינו בענייני פרטיות.",
+      en: "This policy explains what information NINO Boutique collects, why, and how to contact us about privacy.",
+    },
     blocks: [
       {
-        heading: { he: "איזה מידע נאסף", en: "What we collect" },
+        heading: { he: "מי אחראי על המידע", en: "Who is responsible" },
         body: {
           he: [
-            "פרטים שמסרתם בעת ההזמנה: שם, טלפון, אימייל וכתובת למשלוח.",
-            "נתוני שימוש אנונימיים לצורך שיפור האתר.",
+            "בעלת השליטה במידע היא NINO חנות בוטיק, נתיבות (עוסק מורשה 316476308).",
+            "לשאלות או בקשות: Efrattorgeman123@gmail.com או WhatsApp 054-680-9924.",
           ],
           en: [
-            "Details you provide at checkout: name, phone, email and shipping address.",
-            "Anonymous usage data used to improve the site.",
+            "The data controller is NINO Boutique, Netivot (licensed dealer 316476308).",
+            "For questions or requests: Efrattorgeman123@gmail.com or WhatsApp +972 54-680-9924.",
           ],
         },
       },
       {
-        heading: { he: "שימוש במידע", en: "How we use it" },
+        heading: { he: "איזה מידע נאסף ולשם מה", en: "What we collect and why" },
         body: {
           he: [
-            "לצורך אספקת ההזמנה ושירות לקוחות בלבד.",
-            "לא נעביר את פרטיכם לצד שלישי, למעט ספקי משלוח וסליקה.",
-            "אפשר לבקש הסרה מרשימת התפוצה בכל רגע.",
+            "בעת רכישה או פנייה עשויים להיאסף שם, טלפון, אימייל, כתובת למשלוח, פרטי הזמנה ותוכן הפנייה.",
+            "המידע משמש לביצוע הזמנה, סליקה, משלוח/איסוף, שירות לקוחות, מניעת הונאות ושיפור האתר.",
+            "האתר אינו מוכר מידע אישי. מידע נמסר רק לספקים הדרושים להפעלת השירות, כגון Shopify, סליקה, משלוח ודוא״ל, ובהיקף הנדרש.",
           ],
           en: [
-            "Only to fulfil your order and provide customer service.",
-            "We do not share your details, except with our shipping and payment providers.",
-            "You can unsubscribe from our list at any time.",
+            "When you purchase or contact us, we may collect your name, phone, email, shipping address, order details and message.",
+            "We use it for orders, payment, delivery/pickup, customer service, fraud prevention and site improvement.",
+            "We do not sell personal information. We share it only with service providers needed to operate the store, such as Shopify, payment, delivery and email providers, to the extent required.",
+          ],
+        },
+      },
+      {
+        heading: { he: "עוגיות, שמירה וזכויות", en: "Cookies, retention and your rights" },
+        body: {
+          he: [
+            "עוגיות חיוניות נדרשות להפעלת האתר, סל הקניות והשפה. עוגיות מדידה או שיווק יופעלו רק לאחר בחירתכם בבאנר העוגיות.",
+            "נשמור מידע רק כל עוד הוא נחוץ למטרות שלשמן נאסף או לפי חובה חוקית, וננקוט אמצעי אבטחה סבירים.",
+            "ניתן לבקש עיון, תיקון או מחיקה של מידע אישי, בכפוף לדין ולחובות שמירת רשומות. ניתן לבטל דיוור בכל עת.",
+            "המדיניות עשויה להתעדכן; הגרסה המעודכנת תפורסם בעמוד זה.",
+          ],
+          en: [
+            "Essential cookies are needed for the site, cart and language. Analytics or marketing cookies are enabled only after your choice in the cookie banner.",
+            "We retain information only as long as needed for the purposes collected or as required by law, using reasonable security measures.",
+            "You may request access, correction or deletion of personal information, subject to law and record-keeping duties. You can unsubscribe at any time.",
+            "This policy may be updated; the current version will be published on this page.",
+          ],
+        },
+      },
+    ],
+  },
+  {
+    slug: "cookies",
+    title: { he: "מדיניות עוגיות", en: "Cookie policy" },
+    intro: {
+      he: "אנו משתמשים בעוגיות חיוניות כדי שהחנות תעבוד. עוגיות לא חיוניות יופעלו רק בהסכמה.",
+      en: "We use essential cookies to operate the store. Non-essential cookies are enabled only with consent.",
+    },
+    blocks: [
+      {
+        heading: { he: "סוגי עוגיות", en: "Cookie types" },
+        body: {
+          he: [
+            "עוגיות חיוניות: סל, שפה, אבטחה והעדפת הסכמה. לא ניתן לכבות אותן.",
+            "עוגיות מדידה ושיווק: כרגע אינן מופעלות כברירת מחדל; אם יתווספו, יוצגו בבאנר ותוכלו לשנות את הבחירה.",
+            "אפשר לשנות את הבחירה בכל עת דרך הקישור ׳ניהול עוגיות׳ בתחתית האתר.",
+          ],
+          en: [
+            "Essential: cart, language, security and consent preferences. They cannot be disabled.",
+            "Analytics and marketing: not enabled by default today; if added, they will be shown in the banner and you can change your choice.",
+            "You can change your choice at any time through ‘Cookie settings’ in the site footer.",
           ],
         },
       },

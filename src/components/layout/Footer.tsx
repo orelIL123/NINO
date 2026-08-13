@@ -34,6 +34,8 @@ export default function Footer() {
         { label: dict.footer.returns, href: href("/info/returns") },
         { label: dict.footer.faq, href: href("/info/faq") },
         { label: dict.footer.terms, href: href("/info/terms") },
+        { label: dict.footer.privacy, href: href("/info/privacy") },
+        { label: dict.footer.cookies, href: href("/info/cookies") },
         { label: dict.footer.accessibility, href: href("/info/accessibility") },
       ],
     },
