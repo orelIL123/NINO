@@ -25,6 +25,8 @@ const GROUP_TAGS: Record<string, Category["group"]> = {
   sale: "sale",
 };
 
+const CATEGORY_TAG_PREFIX = "category:";
+
 export function slugify(value: string): string {
   return value
     .trim()
@@ -80,6 +82,8 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
   const onSale = compareAt > price;
 
   const collections = he.collections.edges.map((e) => e.node.handle);
+  const categoryTag = he.tags.find((tag) => tag.toLowerCase().startsWith(CATEGORY_TAG_PREFIX));
+  const merchandisingCategory = categoryTag?.slice(CATEGORY_TAG_PREFIX.length);
 
   // Sizes come from the variant matrix; a variant with no size option still
   // needs one row so "add to cart" has something to select.
@@ -112,7 +116,7 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
       en: en.description.split("\n").filter(Boolean),
     },
     brand: slugify(he.vendor || "nino"),
-    category: slugify(he.productType || collections[0] || "clothing"),
+    category: slugify(merchandisingCategory || he.productType || collections[0] || "clothing"),
     group: toGroup(he.tags, collections, onSale),
     gender: toGender(he.tags),
     price,

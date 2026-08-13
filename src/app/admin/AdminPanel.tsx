@@ -6,6 +6,7 @@ import {
   DEFAULT_SIZES,
   PRODUCT_COLORS,
   PRODUCT_TYPES,
+  MERCHANDISING_CATEGORIES,
   groupForProductType,
   type ProductType,
 } from "@/lib/admin/product-conventions";
@@ -206,6 +207,7 @@ export default function AdminPanel({
           descriptionHe: String(form.get("descriptionHe") || ""),
           vendor: String(form.get("vendor") || "NINO"),
           productType,
+          merchandisingCategory: String(form.get("merchandisingCategory") || ""),
           gender: String(form.get("gender") || "men"),
           extraTags: ["new", "bestseller"].filter(
             (tag) => form.get(tag) === "on"
@@ -417,6 +419,14 @@ export default function AdminPanel({
                 <select name="gender" className={inputClass} defaultValue="men">
                   <option value="men">גברים</option>
                   <option value="women">נשים</option>
+                </select>
+              </label>
+              <label>
+                <span className={labelClass}>קטגוריית אתר</span>
+                <select name="merchandisingCategory" className={inputClass} defaultValue="tshirts">
+                  {MERCHANDISING_CATEGORIES.map((category) => (
+                    <option key={category.slug} value={category.slug}>{category.label}</option>
+                  ))}
                 </select>
               </label>
               <div>

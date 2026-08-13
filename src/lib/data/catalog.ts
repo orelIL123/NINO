@@ -33,6 +33,12 @@ export const categories: Category[] = [
   { slug: "jeans", title: { he: "ג׳ינס", en: "Jeans" }, group: "clothing", gender: "men" },
   { slug: "shorts", title: { he: "מכנסיים קצרים", en: "Shorts" }, group: "clothing", gender: "men" },
   { slug: "outerwear", title: { he: "ג׳קטים ומעילים", en: "Jackets & coats" }, group: "clothing", gender: "men" },
+  { slug: "tailored-trousers", title: { he: "מכנס אלגנט", en: "Tailored trousers" }, group: "clothing", gender: "men" },
+  { slug: "bermudas", title: { he: "ברמודות", en: "Bermudas" }, group: "clothing", gender: "men" },
+  { slug: "swimwear", title: { he: "בגדי ים", en: "Swimwear" }, group: "clothing", gender: "men" },
+  { slug: "suits", title: { he: "חליפות", en: "Suits" }, group: "clothing", gender: "men" },
+  { slug: "short-sleeve-shirt-sets", title: { he: "חליפות מכופתר קצרות", en: "Short-sleeve shirt sets" }, group: "clothing", gender: "men" },
+  { slug: "linen-trousers", title: { he: "מכנסי פשתן", en: "Linen trousers" }, group: "clothing", gender: "men" },
 
   { slug: "sneakers", title: { he: "סניקרס", en: "Sneakers" }, group: "shoes", gender: "men", image: "/media/editorial-2.svg", featured: true },
   { slug: "boots", title: { he: "מגפיים ובוטים", en: "Boots" }, group: "shoes", gender: "men" },
@@ -43,6 +49,7 @@ export const categories: Category[] = [
   { slug: "belts", title: { he: "חגורות", en: "Belts" }, group: "accessories", gender: "men" },
   { slug: "sunglasses", title: { he: "משקפי שמש", en: "Sunglasses" }, group: "accessories", gender: "men" },
   { slug: "scarves", title: { he: "צעיפים", en: "Scarves" }, group: "accessories", gender: "men" },
+  { slug: "perfumes", title: { he: "בשמים", en: "Perfumes" }, group: "accessories", gender: "men", featured: true },
 ];
 
 /* -------------------------------------------------------------------------- */

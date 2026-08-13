@@ -40,8 +40,6 @@ export const SITE = {
     "https://www.instagram.com/ninoboutique_n?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
   instagramHandle: "@ninoboutique_n",
   hours: [
-    { he: "ראשון – חמישי", en: "Sunday – Thursday", time: "10:00 – 21:00" },
-    { he: "שישי", en: "Friday", time: "09:00 – 14:00" },
-    { he: "שבת", en: "Saturday", time: "—" },
+    { he: "שעות פעילות", en: "Opening hours", time: "10:00 – 21:00" },
   ],
 } as const;

@@ -28,8 +28,10 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="container-nino py-14">
-      <div className="mx-auto max-w-xl text-center">
+    <section className="relative isolate overflow-hidden border-y border-black/10 bg-[#f4f0e8] py-16">
+      <div className="pointer-events-none absolute -z-10 size-72 -top-36 start-[8%] rounded-full bg-[#e9c88c]/45 blur-3xl animate-float" aria-hidden="true" />
+      <div className="pointer-events-none absolute -z-10 size-64 -bottom-36 end-[10%] rounded-full bg-[#d9b7d6]/35 blur-3xl animate-float-reverse" aria-hidden="true" />
+      <div className="container-nino relative mx-auto max-w-xl text-center">
         <h2 className="font-display text-3xl font-light md:text-4xl">
           {dict.newsletter.title}
         </h2>
@@ -76,7 +78,7 @@ export default function Newsletter() {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="btn btn-primary shrink-0 disabled:opacity-60"
+                className="btn btn-primary shrink-0 shadow-[0_10px_30px_rgba(31,25,19,0.14)] transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-60"
               >
                 {status === "sending"
                   ? dict.newsletter.submitting
