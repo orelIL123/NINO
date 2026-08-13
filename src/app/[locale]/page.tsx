@@ -210,7 +210,7 @@ export default async function HomePage({
       </Reveal>
 
       <EditorialBanner
-        image="/media/sale.svg"
+        image="/media/nino-sale-glow.png"
         eyebrow={dict.nav.sale}
         title={dict.home.saleTitle}
         text={dict.home.saleText}
