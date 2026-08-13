@@ -87,7 +87,7 @@ export default function Hero({
 
             <div className="rise" style={{ animationDelay: "520ms" }}>
               <Link
-                href={localeHref(locale, "/category/new-in")}
+                href={localeHref(locale, "/shop")}
                 className="group relative mt-8 inline-block overflow-hidden border border-white/80 px-10 py-3.5 text-xs tracking-[0.22em] text-white uppercase transition-[letter-spacing,color] duration-500 hover:tracking-[0.3em] hover:text-ink focus-visible:text-ink"
               >
                 {/* White fill wipes in from the reading edge. */}

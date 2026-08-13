@@ -28,7 +28,7 @@ export default async function CollectionView({
   title: string;
   description?: string;
   /** Fixed part of the query — the category or group this page represents. */
-  base: Pick<ProductQuery, "group" | "category" | "brand" | "search">;
+  base: Partial<Pick<ProductQuery, "group" | "category" | "brand" | "search">>;
   searchParams: CollectionSearchParams;
   crumbs?: { label: string; href?: string }[];
 }) {
