@@ -110,9 +110,9 @@ export default async function HomePage({
 
       {/* New arrivals ---------------------------------------------------- */}
       <Reveal as="section" className="container-nino py-14">
-        <SectionHeader
+      <SectionHeader
           title={dict.home.newIn}
-          href={localeHref(locale, "/category/new-in")}
+          href={localeHref(locale, "/shop")}
           linkLabel={dict.common.viewAll}
         />
         <ProductRail>
@@ -137,7 +137,7 @@ export default async function HomePage({
         title={homepage?.seasonal?.title ?? dict.home.editorialTitle}
         text={homepage?.seasonal?.description ?? dict.home.editorialText}
         cta={dict.nav.shopAll}
-        href={localeHref(locale, "/category/new-in")}
+        href={localeHref(locale, "/shop")}
       />
 
       {/* Category tiles --------------------------------------------------- */}
