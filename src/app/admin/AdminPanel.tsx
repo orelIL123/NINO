@@ -193,7 +193,7 @@ export default function AdminPanel({
 
     setBusy(true);
     const form = new FormData(formElement);
-    const title = String(form.get("title") || "").trim();
+    const title = String(form.get("titleHe") || "").trim();
     try {
       const media = await uploadImages(title);
       setProgress("יוצר מוצר, מידות ומלאי ב־Shopify…");
@@ -203,7 +203,7 @@ export default function AdminPanel({
         body: JSON.stringify({
           title,
           titleHe: String(form.get("titleHe") || ""),
-          description: String(form.get("description") || ""),
+          description: String(form.get("descriptionHe") || ""),
           descriptionHe: String(form.get("descriptionHe") || ""),
           vendor: String(form.get("vendor") || "NINO"),
           productType,
@@ -390,14 +390,12 @@ export default function AdminPanel({
 
           <Section title="פרטי מוצר">
             <div className="grid gap-5 md:grid-cols-2">
-              <Field label="שם באנגלית" name="title" placeholder="Oversized Dachshund Tee" required />
-              <Field label="שם בעברית" name="titleHe" placeholder="טי שירט אוברסייז דקל" />
+              <div className="md:col-span-2 rounded-xl border border-[#d9c7a4] bg-[#fbf7ef] px-4 py-3 text-sm text-black/65">
+                מעלים כרגע בעברית בלבד. את התרגום לאנגלית נוסיף אוטומטית בהמשך.
+              </div>
+              <Field label="שם המוצר בעברית" name="titleHe" placeholder="טי שירט אוברסייז דקל" required />
               <label className="md:col-span-2">
-                <span className={labelClass}>תיאור באנגלית</span>
-                <textarea name="description" rows={4} className={inputClass} />
-              </label>
-              <label className="md:col-span-2">
-                <span className={labelClass}>תיאור בעברית</span>
+                <span className={labelClass}>תיאור המוצר בעברית (רשות)</span>
                 <textarea name="descriptionHe" rows={4} className={inputClass} />
               </label>
               <Field label="מותג" name="vendor" defaultValue="NINO" required />

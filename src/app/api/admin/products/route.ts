@@ -280,7 +280,8 @@ function isHttpsUrl(value: string): boolean {
 function parseDraft(body: unknown): AdminProductDraft | null {
   if (!body || typeof body !== "object") return null;
   const input = body as Record<string, unknown>;
-  const title = normalizeText(input.title, 255);
+  const titleHe = normalizeText(input.titleHe, 255);
+  const title = titleHe || normalizeText(input.title, 255);
   const vendor = normalizeText(input.vendor, 255);
   const productType = normalizeText(input.productType, 80);
   const merchandisingCategory = normalizeText(input.merchandisingCategory, 80);
@@ -333,7 +334,10 @@ function parseDraft(body: unknown): AdminProductDraft | null {
   return {
     title,
     titleHe: normalizeText(input.titleHe, 255) || undefined,
-    description: normalizeText(input.description, 10000) || undefined,
+    description:
+      normalizeText(input.descriptionHe, 10000) ||
+      normalizeText(input.description, 10000) ||
+      undefined,
     descriptionHe: normalizeText(input.descriptionHe, 10000) || undefined,
     vendor,
     productType,
