@@ -16,7 +16,7 @@ import type {
   ProductQuery,
   SortKey,
 } from "@/lib/data/types";
-import { fetchProducts, shopifyEnabled } from "@/lib/shopify";
+import { fetchProduct, fetchProducts, shopifyEnabled } from "@/lib/shopify";
 
 /* -------------------------------------------------------------------------- */
 /*  DATA ACCESS LAYER                                                         */
@@ -141,7 +141,20 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   const aliases = list
     .filter((p) => p.slug.startsWith(`${slug}-`) && /-\d+$/.test(p.slug))
     .sort((a, b) => Number(a.slug.match(/-(\d+)$/)?.[1] ?? 0) - Number(b.slug.match(/-(\d+)$/)?.[1] ?? 0));
-  return aliases[0] ?? null;
+  if (aliases[0]) return aliases[0];
+
+  // A product can be created between catalog snapshots (or be beyond the
+  // first catalog page). Ask Shopify directly before falling back to 404.
+  if (shopifyEnabled) {
+    try {
+      const direct = await fetchProduct(slug);
+      if (direct) return direct;
+      return await fetchProduct(`${slug}-1`);
+    } catch (error) {
+      console.error("[catalog] direct product lookup failed", error);
+    }
+  }
+  return null;
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {
