@@ -132,7 +132,16 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const list = await getCatalog();
-  return list.find((p) => p.slug === slug) ?? null;
+  const exact = list.find((p) => p.slug === slug);
+  if (exact) return exact;
+
+  // Shopify appends a numeric suffix when two products share a title. Older
+  // links can therefore contain the unsuffixed title handle; resolve those
+  // aliases to the first matching canonical product instead of returning 404.
+  const aliases = list
+    .filter((p) => p.slug.startsWith(`${slug}-`) && /-\d+$/.test(p.slug))
+    .sort((a, b) => Number(a.slug.match(/-(\d+)$/)?.[1] ?? 0) - Number(b.slug.match(/-(\d+)$/)?.[1] ?? 0));
+  return aliases[0] ?? null;
 }
 
 export async function getProductsBySlugs(slugs: string[]): Promise<Product[]> {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import ProductGallery from "@/components/product/ProductGallery";
 import PurchasePanel from "@/components/product/PurchasePanel";
@@ -43,7 +43,7 @@ export async function generateMetadata({
   return {
     title: `${product.title[locale]} · ${brand?.name ?? ""}`,
     description: product.description[locale],
-    alternates: { canonical: localeHref(locale, `/product/${slug}`) },
+    alternates: { canonical: localeHref(locale, `/product/${product.slug}`) },
     openGraph: {
       title: product.title[locale],
       description: product.description[locale],
@@ -58,6 +58,9 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   const product = await getProductBySlug(slug);
   if (!product) notFound();
+  if (product.slug !== slug) {
+    permanentRedirect(localeHref(locale, `/product/${product.slug}`));
+  }
 
   const dict = getDictionary(locale);
   const [brand, category, related, colorways] = await Promise.all([
