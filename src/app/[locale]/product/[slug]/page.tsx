@@ -24,6 +24,11 @@ import { MapPinIcon, ReturnIcon, TruckIcon } from "@/components/ui/Icons";
 
 type Params = Promise<{ locale: string; slug: string }>;
 
+// Product handles can be created or changed in Shopify after a deployment.
+// Resolve the live catalog at request time so a stale build cannot freeze a
+// newly uploaded product into a 404 page.
+export const dynamic = "force-dynamic";
+
 export async function generateStaticParams() {
   const slugs = await getAllProductSlugs();
   return locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })));
