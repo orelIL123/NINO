@@ -41,7 +41,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
-  const product = await getProductBySlug(slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const product = await getProductBySlug(decodedSlug);
   if (!product) return {};
   const brand = await getBrandBySlug(product.brand);
 
@@ -61,9 +62,12 @@ export default async function ProductPage({ params }: { params: Params }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
 
-  const product = await getProductBySlug(slug);
+  // Some browsers and older links pass the Hebrew handle still percent
+  // encoded. Normalize it before querying Shopify, whose handle is Unicode.
+  const decodedSlug = decodeURIComponent(slug);
+  const product = await getProductBySlug(decodedSlug);
   if (!product) notFound();
-  if (product.slug !== slug) {
+  if (product.slug !== decodedSlug) {
     permanentRedirect(localeHref(locale, `/product/${product.slug}`));
   }
 
