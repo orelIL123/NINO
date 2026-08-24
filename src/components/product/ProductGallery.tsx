@@ -28,7 +28,7 @@ export default function ProductGallery({
                 i === active ? "ring-1 ring-ink" : "opacity-70 hover:opacity-100"
               }`}
             >
-              <Image src={src} alt="" fill sizes="80px" className="object-cover" />
+              <Image src={src} alt="" fill sizes="80px" className="object-contain" />
             </button>
           ))}
         </div>
@@ -43,7 +43,7 @@ export default function ProductGallery({
             fill
             priority={i === 0}
             sizes="(min-width: 1024px) 45vw, 100vw"
-            className={`object-cover transition-opacity duration-300 ${
+            className={`object-contain transition-opacity duration-300 ${
               i === active ? "opacity-100" : "opacity-0"
             }`}
           />

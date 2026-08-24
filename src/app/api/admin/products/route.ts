@@ -158,6 +158,18 @@ const PRODUCT_PUBLISH_MUTATION = /* GraphQL */ `
   }
 `;
 
+const PRODUCT_DELETE_MUTATION = /* GraphQL */ `
+  mutation DeleteProduct($id: ID!) {
+    productDelete(input: { id: $id }) {
+      deletedProductId
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 const TRANSLATABLE_CONTENT_QUERY = /* GraphQL */ `
   query TranslationContent($id: ID!) {
     translatableResource(resourceId: $id) {
@@ -238,6 +250,13 @@ interface VariantsCreateResponse {
 
 interface MutationErrors {
   userErrors: ShopifyUserError[];
+}
+
+interface ProductDeleteResponse {
+  productDelete: {
+    deletedProductId: string | null;
+    userErrors: ShopifyUserError[];
+  };
 }
 
 function normalizeText(value: unknown, max: number): string {
@@ -598,6 +617,34 @@ export async function POST(request: Request) {
         error: error instanceof Error ? error.message : "product_create_failed",
         partialProduct: created,
       },
+      { status: 502 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!(await isSameOrigin(request)) || !(await isAdminAuthenticated())) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+
+  const body = (await request.json().catch(() => null)) as { id?: unknown } | null;
+  const id = typeof body?.id === "string" ? body.id.trim() : "";
+  if (!/^gid:\/\/shopify\/Product\/\d+$/.test(id)) {
+    return NextResponse.json({ ok: false, error: "invalid_product_id" }, { status: 400 });
+  }
+
+  try {
+    const result = await shopifyAdmin<ProductDeleteResponse>(PRODUCT_DELETE_MUTATION, { id });
+    assertNoUserErrors(result.productDelete.userErrors, "Could not delete product");
+    if (result.productDelete.deletedProductId !== id) {
+      throw new Error("Shopify did not confirm product deletion");
+    }
+    revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
+    return NextResponse.json({ ok: true, deletedProductId: id });
+  } catch (error) {
+    console.error("[admin/product delete]", error);
+    return NextResponse.json(
+      { ok: false, error: error instanceof Error ? error.message : "product_delete_failed" },
       { status: 502 }
     );
   }

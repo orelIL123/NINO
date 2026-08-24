@@ -35,6 +35,8 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [truncated, setTruncated] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -83,6 +85,26 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
     );
   }, [products, query]);
 
+  async function deleteProduct(product: ExistingProduct) {
+    if (!window.confirm(`למחוק את המוצר “${product.title}” מ־Shopify? הפעולה לא ניתנת לביטול.`)) return;
+    setDeletingId(product.id);
+    setDeleteError("");
+    try {
+      const response = await fetch("/api/admin/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: product.id }),
+      });
+      const data = (await response.json()) as { ok: boolean; error?: string };
+      if (!response.ok || !data.ok) throw new Error(data.error || "מחיקת המוצר נכשלה");
+      setProducts((current) => current.filter((item) => item.id !== product.id));
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : "מחיקת המוצר נכשלה");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <section className="rounded-3xl bg-white p-5 shadow-[0_10px_45px_rgba(0,0,0,0.045)] md:p-7">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -120,6 +142,7 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
         </p>
       ) : (
         <>
+          {deleteError && <p role="alert" className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">{deleteError}</p>}
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {visible.map((product) => (
               <article
@@ -133,7 +156,7 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
                       alt={product.image.altText || product.title}
                       fill
                       sizes="80px"
-                      className="object-cover"
+                    className="object-contain"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-xs text-black/35">
@@ -182,6 +205,14 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
                       פתיחה ועריכה ב־Shopify
                     </a>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => void deleteProduct(product)}
+                    disabled={deletingId === product.id}
+                    className="mt-3 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50"
+                  >
+                    {deletingId === product.id ? "מוחק…" : "מחיקת מוצר"}
+                  </button>
                 </div>
               </article>
             ))}
