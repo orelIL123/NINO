@@ -18,6 +18,7 @@ export const runtime = "nodejs";
 
 const ADMIN_CONTEXT_QUERY = /* GraphQL */ `
   query AdminContext {
+    shop { id }
     locations(first: 10) {
       nodes {
         id
@@ -47,8 +48,11 @@ const ADMIN_PRODUCTS_QUERY = /* GraphQL */ `
         totalInventory
         variants(first: 100) {
           nodes {
+            id
             title
+            price
             inventoryQuantity
+            inventoryItem { id }
             selectedOptions {
               name
               value
@@ -170,6 +174,24 @@ const PRODUCT_DELETE_MUTATION = /* GraphQL */ `
   }
 `;
 
+const PRODUCT_VARIANTS_UPDATE_MUTATION = /* GraphQL */ `
+  mutation UpdateProductPrices($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+    productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+      productVariants { id price }
+      userErrors { field message }
+    }
+  }
+`;
+
+const INVENTORY_SET_MUTATION = /* GraphQL */ `
+  mutation SetInventory($input: InventorySetQuantitiesInput!) {
+    inventorySetQuantities(input: $input) {
+      inventoryAdjustmentGroup { createdAt }
+      userErrors { field message }
+    }
+  }
+`;
+
 const TRANSLATABLE_CONTENT_QUERY = /* GraphQL */ `
   query TranslationContent($id: ID!) {
     translatableResource(resourceId: $id) {
@@ -204,6 +226,7 @@ const TRANSLATIONS_REGISTER_MUTATION = /* GraphQL */ `
 `;
 
 interface AdminContext {
+  shop: { id: string };
   locations: { nodes: Array<{ id: string; name: string; isActive: boolean }> };
   publications: { nodes: Array<{ id: string; name: string }> };
 }
@@ -221,7 +244,10 @@ interface AdminProductListResponse {
       variants: {
         nodes: Array<{
           title: string;
+          id: string;
+          price: string;
           inventoryQuantity: number;
+          inventoryItem: { id: string } | null;
           selectedOptions: Array<{ name: string; value: string }>;
         }>;
       };
@@ -257,6 +283,13 @@ interface ProductDeleteResponse {
     deletedProductId: string | null;
     userErrors: ShopifyUserError[];
   };
+}
+
+interface ProductActionBody {
+  action?: unknown;
+  productId?: unknown;
+  price?: unknown;
+  variants?: unknown;
 }
 
 function normalizeText(value: unknown, max: number): string {
@@ -647,5 +680,56 @@ export async function DELETE(request: Request) {
       { ok: false, error: error instanceof Error ? error.message : "product_delete_failed" },
       { status: 502 }
     );
+  }
+}
+
+export async function PATCH(request: Request) {
+  if (!(await isSameOrigin(request)) || !(await isAdminAuthenticated())) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+  const body = (await request.json().catch(() => null)) as ProductActionBody | null;
+  const action = body?.action;
+  const productId = typeof body?.productId === "string" ? body.productId.trim() : "";
+  if ((action !== "price" && action !== "sold_out") || !/^gid:\/\/shopify\/Product\/\d+$/.test(productId)) {
+    return NextResponse.json({ ok: false, error: "invalid_product_action" }, { status: 400 });
+  }
+  try {
+    const context = await shopifyAdmin<AdminContext>(ADMIN_CONTEXT_QUERY);
+    const location = context.locations.nodes.find((item) => item.isActive);
+    if (!location) throw new Error("No active Shopify inventory location was found");
+    const variants = Array.isArray(body?.variants)
+      ? body.variants.filter(
+          (item): item is { id: string; inventoryItemId: string } =>
+            Boolean(item && typeof item === "object" && typeof (item as { id?: unknown }).id === "string" && typeof (item as { inventoryItemId?: unknown }).inventoryItemId === "string")
+        )
+      : [];
+    if (!variants.length) throw new Error("No product variants were provided");
+
+    if (action === "price") {
+      const price = Number(body?.price);
+      if (!Number.isFinite(price) || price <= 0 || price > 1_000_000) {
+        return NextResponse.json({ ok: false, error: "invalid_price" }, { status: 400 });
+      }
+      const result = await shopifyAdmin<{ productVariantsBulkUpdate: { userErrors: ShopifyUserError[] } }>(PRODUCT_VARIANTS_UPDATE_MUTATION, {
+        productId,
+        variants: variants.map((variant) => ({ id: variant.id, price: price.toFixed(2) })),
+      });
+      assertNoUserErrors(result.productVariantsBulkUpdate.userErrors, "Could not update price");
+    } else {
+      const result = await shopifyAdmin<{ inventorySetQuantities: { userErrors: ShopifyUserError[] } }>(INVENTORY_SET_MUTATION, {
+        input: {
+          name: "available",
+          reason: "correction",
+          ignoreCompareQuantity: true,
+          quantities: variants.map((variant) => ({ inventoryItemId: variant.inventoryItemId, locationId: location.id, quantity: 0 })),
+        },
+      });
+      assertNoUserErrors(result.inventorySetQuantities.userErrors, "Could not update inventory");
+    }
+    revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error(`[admin/product ${String(action)}]`, error);
+    return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : "product_update_failed" }, { status: 502 });
   }
 }

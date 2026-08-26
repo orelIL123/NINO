@@ -13,8 +13,11 @@ type ExistingProduct = {
   totalInventory: number;
   variants: {
     nodes: Array<{
+      id: string;
       title: string;
+      price: string;
       inventoryQuantity: number;
+      inventoryItem: { id: string } | null;
       selectedOptions: Array<{ name: string; value: string }>;
     }>;
   };
@@ -37,6 +40,8 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
   const [truncated, setTruncated] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState("");
+  const [prices, setPrices] = useState<Record<string, string>>({});
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +65,7 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
         }
         setError("");
         setProducts(data.products);
+        setPrices(Object.fromEntries(data.products.map((product) => [product.id, product.variants.nodes[0]?.price || ""])));
         setTruncated(Boolean(data.truncated));
       })
       .catch(() => {
@@ -102,6 +108,31 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
       setDeleteError(error instanceof Error ? error.message : "מחיקת המוצר נכשלה");
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function updateProduct(product: ExistingProduct, action: "price" | "sold_out") {
+    if (action === "sold_out" && !window.confirm(`לסמן את “${product.title}” כאזל מהמלאי?`)) return;
+    const variants = product.variants.nodes
+      .filter((variant) => variant.inventoryItem)
+      .map((variant) => ({ id: variant.id, inventoryItemId: variant.inventoryItem!.id }));
+    setUpdatingId(product.id);
+    setDeleteError("");
+    try {
+      const response = await fetch("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id, action, price: prices[product.id], variants }),
+      });
+      const data = (await response.json()) as { ok: boolean; error?: string };
+      if (!response.ok || !data.ok) throw new Error(data.error || "השינוי נכשל");
+      if (action === "sold_out") {
+        setProducts((current) => current.map((item) => item.id === product.id ? { ...item, totalInventory: 0, variants: { nodes: item.variants.nodes.map((variant) => ({ ...variant, inventoryQuantity: 0 })) } } : item));
+      }
+    } catch (error) {
+      setDeleteError(error instanceof Error ? error.message : "השינוי נכשל");
+    } finally {
+      setUpdatingId(null);
     }
   }
 
@@ -178,6 +209,12 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
                   <p className="mt-2 text-xs text-black/60">
                     מלאי המוצר: <strong>{product.totalInventory}</strong>
                   </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <label className="sr-only" htmlFor={`price-${product.id}`}>מחיר חדש</label>
+                    <input id={`price-${product.id}`} type="number" min="0.01" step="0.01" value={prices[product.id] || ""} onChange={(event) => setPrices((current) => ({ ...current, [product.id]: event.target.value }))} className="w-24 rounded-lg border border-black/15 px-2 py-1.5 text-xs" />
+                    <button type="button" onClick={() => void updateProduct(product, "price")} disabled={updatingId === product.id} className="rounded-lg border border-black/15 px-2.5 py-1.5 text-xs font-semibold disabled:opacity-50">עדכון מחיר</button>
+                    <button type="button" onClick={() => void updateProduct(product, "sold_out")} disabled={updatingId === product.id || product.totalInventory === 0} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-red-700 disabled:opacity-50">{product.totalInventory === 0 ? "אזל" : "סמן כאזל"}</button>
+                  </div>
                   {product.variants.nodes.length > 0 && (
                     <div className="mt-2 space-y-0.5 text-[11px] text-black/55">
                       {product.variants.nodes.map((variant) => {

@@ -12,17 +12,23 @@ import { SHOPIFY_CATALOG_CACHE_TAG } from "@/lib/shopify/cache";
 export const runtime = "nodejs";
 
 const COLLECTIONS = {
+  clothing: { handle: "clothing", label: "ביגוד" },
   tshirts: { handle: "t-shirts", label: "טי שירט" },
   outerwear: { handle: "jackets-coats", label: "ג׳קטים ומעילים" },
   shoes: { handle: "shoes", label: "נעליים" },
   accessories: { handle: "accessories", label: "אקססוריז" },
   seasonal: { handle: "new-in", label: "קולקציית העונה" },
+  visit: { handle: "__shop__", label: "בואו לבקר בחנות" },
 } as const;
 
 type HomepageKey = keyof typeof COLLECTIONS;
 
 const COLLECTIONS_QUERY = /* GraphQL */ `
   query HomepageAdminCollections {
+    shop {
+      id
+      metafield(namespace: "custom", key: "homepage_images") { value }
+    }
     collections(first: 50) {
       nodes {
         id
@@ -73,6 +79,15 @@ const COLLECTION_UPDATE_MUTATION = /* GraphQL */ `
   }
 `;
 
+const SHOP_IMAGES_MUTATION = /* GraphQL */ `
+  mutation SaveHomepageImages($ownerId: ID!, $value: String!) {
+    metafieldsSet(metafields: [{ ownerId: $ownerId, namespace: "custom", key: "homepage_images", type: "json", value: $value }]) {
+      metafields { key }
+      userErrors { field message }
+    }
+  }
+`;
+
 const TRANSLATABLE_CONTENT_QUERY = /* GraphQL */ `
   query HomepageTranslationContent($id: ID!) {
     translatableResource(resourceId: $id) {
@@ -118,7 +133,13 @@ interface CollectionNode {
   products: { nodes: Array<{ featuredImage: { url: string } | null }> };
 }
 
+interface ShopNode {
+  id: string;
+  metafield: { value: string } | null;
+}
+
 interface CollectionsResponse {
+  shop: ShopNode;
   collections: { nodes: CollectionNode[] };
 }
 
@@ -163,9 +184,12 @@ function isHttpsUrl(value: string): boolean {
   }
 }
 
+async function getHomepageData(): Promise<CollectionsResponse> {
+  return shopifyAdmin<CollectionsResponse>(COLLECTIONS_QUERY);
+}
+
 async function getCollections(): Promise<CollectionNode[]> {
-  const data = await shopifyAdmin<CollectionsResponse>(COLLECTIONS_QUERY);
-  return data.collections.nodes;
+  return (await getHomepageData()).collections.nodes;
 }
 
 export async function GET() {
@@ -174,12 +198,13 @@ export async function GET() {
   }
 
   try {
-    const byHandle = new Map(
-      (await getCollections()).map((collection) => [collection.handle, collection])
-    );
+    const homepageData = await getHomepageData();
+    const byHandle = new Map(homepageData.collections.nodes.map((collection) => [collection.handle, collection]));
+    let images: { clothing?: string; visit?: string } = {};
+    try { images = homepageData.shop.metafield?.value ? JSON.parse(homepageData.shop.metafield.value) : {}; } catch {}
 
     const sections = Object.entries(COLLECTIONS).map(([key, config]) => {
-      const collection = byHandle.get(config.handle);
+      const collection = config.handle === "__shop__" ? undefined : byHandle.get(config.handle);
       const translated = new Map(
         collection?.translations.map((item) => [item.key, item.value]) ?? []
       );
@@ -196,8 +221,8 @@ export async function GET() {
       return {
         key,
         label: config.label,
-        exists: Boolean(collection),
-        collectionImage: collection?.image?.url ?? null,
+        exists: Boolean(collection) || key === "clothing" || key === "visit",
+        collectionImage: images[key as "clothing" | "visit"] ?? collection?.image?.url ?? null,
         automaticImage: collection?.products.nodes[0]?.featuredImage?.url ?? null,
         ...(key === "seasonal"
           ? {
@@ -247,6 +272,21 @@ export async function POST(request: Request) {
     const collection = (await getCollections()).find(
       (item) => item.handle === COLLECTIONS[sectionKey].handle
     );
+    if (sectionKey === "clothing" || sectionKey === "visit") {
+      const data = await getHomepageData();
+      let images: Record<string, string> = {};
+      try { images = data.shop.metafield?.value ? JSON.parse(data.shop.metafield.value) : {}; } catch {}
+      if (body?.removeImage === true) delete images[sectionKey];
+      else if (typeof body?.imageUrl === "string") {
+        const imageUrl = normalizeText(body.imageUrl, 2048);
+        if (!isHttpsUrl(imageUrl)) throw new Error("invalid_image");
+        images[sectionKey] = imageUrl;
+      }
+      const saved = await shopifyAdmin<{ metafieldsSet: { userErrors: ShopifyUserError[] } }>(SHOP_IMAGES_MUTATION, { ownerId: data.shop.id, value: JSON.stringify(images) });
+      assertNoUserErrors(saved.metafieldsSet.userErrors, "Could not save homepage image");
+      revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
+      return NextResponse.json({ ok: true });
+    }
     if (!collection) throw new Error("Shopify collection was not found");
 
     const input: Record<string, unknown> = { id: collection.id };

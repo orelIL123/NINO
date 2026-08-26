@@ -46,11 +46,14 @@ export interface HomepageCollection {
 }
 
 export interface HomepageCollections {
+  shop?: { metafield: { value: string } | null };
   tshirts: HomepageCollection | null;
   outerwear: HomepageCollection | null;
   shoes: HomepageCollection | null;
   accessories: HomepageCollection | null;
   seasonal: HomepageCollection | null;
+  clothingImage?: string | null;
+  visitImage?: string | null;
 }
 
 /**
@@ -113,8 +116,19 @@ export async function fetchHomepageCollections(
   const collections = await storefront<HomepageCollections>(HOMEPAGE_COLLECTIONS_QUERY, {
     language: languageCode[locale],
   });
-  const seasonal = collections.seasonal;
-  if (!seasonal?.metafield?.value) return collections;
+  let imageOverrides: { clothing?: string; visit?: string } = {};
+  try {
+    imageOverrides = collections.shop?.metafield?.value
+      ? (JSON.parse(collections.shop.metafield.value) as { clothing?: string; visit?: string })
+      : {};
+  } catch {}
+  const withOverrides = {
+    ...collections,
+    clothingImage: imageOverrides.clothing ?? null,
+    visitImage: imageOverrides.visit ?? null,
+  };
+  const seasonal = withOverrides.seasonal;
+  if (!seasonal?.metafield?.value) return withOverrides;
 
   try {
     const content = JSON.parse(seasonal.metafield.value) as {
@@ -123,7 +137,7 @@ export async function fetchHomepageCollections(
       description?: Partial<Record<"he" | "en", string>>;
     };
     return {
-      ...collections,
+      ...withOverrides,
       seasonal: {
         ...seasonal,
         title: content.title?.[locale] || seasonal.title,

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 type HomepageSection = {
-  key: "tshirts" | "outerwear" | "shoes" | "accessories" | "seasonal";
+  key: "tshirts" | "outerwear" | "shoes" | "accessories" | "clothing" | "seasonal" | "visit";
   label: string;
   exists: boolean;
   collectionImage: string | null;
@@ -177,8 +177,9 @@ export default function HomepageEditor() {
     }
   }
 
-  const categories = sections.filter((section) => section.key !== "seasonal");
+  const categories = sections.filter((section) => !["seasonal", "visit"].includes(section.key));
   const seasonal = sections.find((section) => section.key === "seasonal");
+  const visit = sections.find((section) => section.key === "visit");
 
   return (
     <section className="mt-14 border-t border-black/10 pt-12">
@@ -319,6 +320,24 @@ export default function HomepageEditor() {
                   >
                     {busyKey === seasonal.key ? "שומר ב־Shopify…" : "שמירת תוכן דף הבית"}
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {visit && (
+            <div className="mt-6 rounded-3xl bg-white p-5 shadow-[0_10px_45px_rgba(0,0,0,0.045)] md:p-7">
+              <h3 className="text-xl font-bold">בואו לבקר בחנות</h3>
+              <p className="mt-1 text-sm text-black/50">תמונת האווירה שמוצגת באזור החנות בדף הבית.</p>
+              <div className="mt-5 grid gap-5 sm:grid-cols-[280px_1fr] sm:items-start">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#eceae6]">
+                  {visit.collectionImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={visit.collectionImage} alt="" className="h-full w-full object-cover" />
+                  ) : <div className="flex h-full items-center justify-center text-sm text-black/40">תמונת ברירת מחדל</div>}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <label className="cursor-pointer rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white">{busyKey === visit.key ? "שומר…" : "העלאת תמונה"}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busyKey === visit.key} onChange={(event) => { void upload(visit, event.target.files?.[0]); event.target.value = ""; }} /></label>
+                  {visit.collectionImage && <button type="button" disabled={busyKey === visit.key} onClick={() => void resetImage(visit)} className="rounded-lg border border-black/15 px-3 py-2 text-xs font-semibold">חזרה לברירת מחדל</button>}
                 </div>
               </div>
             </div>

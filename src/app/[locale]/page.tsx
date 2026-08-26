@@ -155,12 +155,12 @@ export default async function HomePage({
           {
             label: dict.home.panelClothing,
             href: localeHref(locale, "/clothing"),
-            image: "/media/editorial-3.svg",
+            image: homepage?.clothingImage ?? "/media/editorial-3.svg",
           },
           {
             label: dict.home.panelShoes,
             href: localeHref(locale, "/shoes"),
-            image: "/media/editorial-2.svg",
+            image: homepage?.shoes?.image?.url ?? "/media/editorial-2.svg",
           },
         ].map((panel) => (
           <Link
@@ -258,7 +258,7 @@ export default async function HomePage({
         />
         <div className="absolute inset-0 -z-10 bg-white/55 backdrop-blur-[1px]" aria-hidden="true" />
         <div className="container-nino grid items-center gap-8 md:grid-cols-2 md:gap-14">
-          <div className="aspect-4/3 rounded-sm bg-cover bg-center shadow-[0_24px_70px_rgba(90,55,20,0.12)]" style={{ backgroundImage: "url(/media/store.svg)" }} aria-hidden="true" />
+          <div className="aspect-4/3 rounded-sm bg-cover bg-center shadow-[0_24px_70px_rgba(90,55,20,0.12)]" style={{ backgroundImage: `url(${homepage?.visitImage ?? "/media/store.svg"})` }} aria-hidden="true" />
           <div>
             <p className="eyebrow text-ink-muted">{SITE.city[locale]}</p>
             <h2 className="mt-3 font-display text-3xl font-light md:text-4xl">{dict.home.visitTitle}</h2>

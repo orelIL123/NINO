@@ -137,6 +137,9 @@ export const COLLECTIONS_QUERY = /* GraphQL */ `
 export const HOMEPAGE_COLLECTIONS_QUERY = /* GraphQL */ `
   query HomepageCollections($language: LanguageCode)
   @inContext(language: $language) {
+    shop {
+      metafield(namespace: "custom", key: "homepage_images") { value }
+    }
     tshirts: collection(handle: "t-shirts") {
       ...HomepageCollectionFields
     }
