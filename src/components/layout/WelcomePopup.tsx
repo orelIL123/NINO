@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { localeHref, type Locale } from "@/lib/i18n/config";
 import { CloseIcon } from "@/components/ui/Icons";
@@ -64,14 +64,14 @@ export default function WelcomePopup({
 
   useFocusTrap(dialogRef, open, dismiss);
 
-  function dismiss() {
+  const dismiss = useCallback(() => {
     setOpen(false);
     try {
       window.localStorage.setItem(STORAGE_KEY, String(content.version));
     } catch {
       /* dismissal simply will not persist */
     }
-  }
+  }, [content.version]);
 
   if (!open) return null;
 
