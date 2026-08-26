@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { formatPrice } from "@/lib/utils/format";
@@ -12,6 +12,7 @@ import {
   CloseIcon,
   FilterIcon,
 } from "@/components/ui/Icons";
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
 
 export default function Filters({
@@ -29,6 +30,8 @@ export default function Filters({
   const pathname = usePathname();
   const params = useSearchParams();
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open, () => setOpen(false));
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -284,6 +287,7 @@ export default function Filters({
       <div
         className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
         aria-hidden={!open}
+        inert={!open ? true : undefined}
       >
         <div
           onClick={() => setOpen(false)}
@@ -292,6 +296,7 @@ export default function Filters({
           }`}
         />
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={dict.listing.filters}

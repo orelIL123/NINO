@@ -42,10 +42,10 @@ export default function AccessibilityReportForm() {
       <p className="mt-2 text-sm text-ink-soft">
         {locale === "he" ? "תארו את הבעיה ונחזור אליכם בהקדם." : "Describe the issue and we will get back to you shortly."}
       </p>
-      <form onSubmit={submit} className="mt-5 grid gap-4" noValidate>
-        <input value={name} onChange={(e) => setName(e.target.value)} required minLength={2} placeholder={dict.pages.yourName} aria-label={dict.pages.yourName} className="border border-line bg-white px-4 py-3 text-sm outline-none focus:border-ink" />
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Email" aria-label="Email" className="border border-line bg-white px-4 py-3 text-sm outline-none focus:border-ink" />
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} required minLength={5} placeholder={dict.pages.yourMessage} aria-label={dict.pages.yourMessage} rows={4} className="resize-y border border-line bg-white px-4 py-3 text-sm outline-none focus:border-ink" />
+      <form onSubmit={submit} aria-label={locale === "he" ? "דיווח נגישות" : "Accessibility report"} className="mt-5 grid gap-4" noValidate>
+        <label className="grid gap-1 text-sm"><span>{dict.pages.yourName}</span><input id="accessibility-name" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} autoComplete="name" className="border border-line bg-white px-4 py-3 text-sm outline-none focus:border-ink" /></label>
+        <label className="grid gap-1 text-sm"><span>Email</span><input id="accessibility-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="border border-line bg-white px-4 py-3 text-sm outline-none focus:border-ink" /></label>
+        <label className="grid gap-1 text-sm"><span>{dict.pages.yourMessage}</span><textarea id="accessibility-message" value={message} onChange={(e) => setMessage(e.target.value)} required minLength={5} rows={4} className="resize-y border border-line bg-white px-4 py-3 text-sm outline-none focus:border-ink" /></label>
         <button type="submit" disabled={status === "sending"} className="w-fit bg-ink px-5 py-3 text-sm text-white transition-opacity hover:opacity-80 disabled:opacity-50">
           {status === "sending" ? dict.pages.messageSending : locale === "he" ? "שליחת דיווח" : "Send report"}
         </button>

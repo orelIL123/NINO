@@ -49,6 +49,7 @@ export default async function AccountPage({
           className="btn btn-primary"
         >
           {dict.pages.whatsapp}
+          <span className="sr-only">(opens in a new window)</span>
         </a>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useRef } from "react";
 
 import QuantityStepper from "./QuantityStepper";
 import FreeShippingBar from "./FreeShippingBar";
@@ -10,6 +10,7 @@ import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { useStore } from "@/lib/store/StoreProvider";
 import { formatPrice } from "@/lib/utils/format";
 import { BagIcon, CloseIcon, TrashIcon } from "@/components/ui/Icons";
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
 export default function CartDrawer() {
   const { dict, locale, href } = useLocale();
@@ -24,17 +25,14 @@ export default function CartDrawer() {
     removeFromCart,
     setQuantity,
   } = useStore();
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeDrawer();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [closeDrawer]);
+  const dialogRef = useRef<HTMLElement>(null);
+  useFocusTrap(dialogRef, drawerOpen, closeDrawer);
 
   return (
     <div
       className={`fixed inset-0 z-50 ${drawerOpen ? "" : "pointer-events-none"}`}
       aria-hidden={!drawerOpen}
+      inert={!drawerOpen ? true : undefined}
     >
       <div
         onClick={closeDrawer}
@@ -44,6 +42,7 @@ export default function CartDrawer() {
       />
 
       <aside
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={dict.cart.title}

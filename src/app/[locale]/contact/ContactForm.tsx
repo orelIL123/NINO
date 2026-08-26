@@ -48,7 +48,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} aria-label={dict.pages.sendMessage} className="space-y-3">
       <h2 className="eyebrow mb-4 text-ink-muted">{dict.pages.sendMessage}</h2>
 
       <label className="block">

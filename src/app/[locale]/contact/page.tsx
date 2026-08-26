@@ -68,6 +68,7 @@ export default async function ContactPage({
             >
               <WhatsappIcon size={18} />
               {dict.pages.whatsapp}
+              <span className="sr-only">(opens in a new window)</span>
             </a>
             <a
               href={SITE.instagram}
@@ -77,6 +78,7 @@ export default async function ContactPage({
             >
               <InstagramIcon size={18} />
               {SITE.instagramHandle}
+              <span className="sr-only">(opens in a new window)</span>
             </a>
           </div>
 

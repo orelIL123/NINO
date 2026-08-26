@@ -180,6 +180,7 @@ export default function Header({ categories }: { categories: Category[] }) {
         <AnnouncementBar />
 
         <header
+          role="banner"
           className={`border-b backdrop-blur transition-transform duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] ${
             isHome
               ? "relative border-white/35 bg-white/88 supports-[backdrop-filter]:bg-white/76"
@@ -370,7 +371,7 @@ export default function Header({ categories }: { categories: Category[] }) {
         {/* --- search panel ----------------------------------------------- */}
         {searchOpen && (
           <div className="absolute inset-x-0 top-full animate-fade-in border-b border-line bg-canvas">
-            <form onSubmit={submitSearch} className="container-nino py-8">
+            <form role="search" aria-label={dict.header.search} onSubmit={submitSearch} className="container-nino py-8">
               <div className="mx-auto flex max-w-3xl items-center gap-3 border-b border-ink pb-3">
                 <SearchIcon size={22} className="shrink-0 text-ink-muted" />
                 <input

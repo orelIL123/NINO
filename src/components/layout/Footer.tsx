@@ -42,7 +42,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="mt-20 border-t border-line bg-surface">
+    <footer role="contentinfo" className="mt-20 border-t border-line bg-surface">
       <Newsletter />
 
       <div className="container-nino grid gap-10 border-t border-line py-14 md:grid-cols-2 lg:grid-cols-4">
@@ -60,6 +60,7 @@ export default function Footer() {
               className="flex h-9 w-9 items-center justify-center border border-line-strong transition-colors hover:border-ink"
             >
               <InstagramIcon size={17} />
+              <span className="sr-only">Instagram (opens in a new window)</span>
             </a>
             <a
               href={`https://wa.me/${SITE.whatsapp}`}
@@ -69,6 +70,7 @@ export default function Footer() {
               className="flex h-9 w-9 items-center justify-center border border-line-strong transition-colors hover:border-ink"
             >
               <WhatsappIcon size={17} />
+              <span className="sr-only">WhatsApp (opens in a new window)</span>
             </a>
             <a
               href={`tel:${SITE.phone.replace(/[^\d+]/g, "")}`}

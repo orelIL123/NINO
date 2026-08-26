@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { localeHref, type Locale } from "@/lib/i18n/config";
 import { CloseIcon } from "@/components/ui/Icons";
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
 /* -------------------------------------------------------------------------- */
 /*  First-visit popup                                                         */
@@ -32,7 +33,7 @@ export default function WelcomePopup({
 }) {
   const [open, setOpen] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const restoreFocus = useRef<Element | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Private-mode Safari throws on storage access; a popup is not worth a crash.
@@ -53,24 +54,15 @@ export default function WelcomePopup({
   useEffect(() => {
     if (!open) return;
 
-    restoreFocus.current = document.activeElement;
-    closeRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") dismiss();
-    };
-    document.addEventListener("keydown", onKey);
-
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener("keydown", onKey);
       document.body.style.overflow = overflow;
-      (restoreFocus.current as HTMLElement | null)?.focus?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
+  useFocusTrap(dialogRef, open, dismiss);
 
   function dismiss() {
     setOpen(false);
@@ -89,6 +81,7 @@ export default function WelcomePopup({
       role="dialog"
       aria-modal="true"
       aria-labelledby="welcome-popup-title"
+      aria-describedby="welcome-popup-body"
     >
       <button
         type="button"
@@ -98,7 +91,7 @@ export default function WelcomePopup({
         className="absolute inset-0 cursor-default bg-black/55 backdrop-blur-[2px]"
       />
 
-      <div className="animate-fade-up relative w-full max-w-md border border-line bg-canvas p-8 text-center shadow-2xl sm:p-10">
+      <div ref={dialogRef} className="animate-fade-up relative w-full max-w-md border border-line bg-canvas p-8 text-center shadow-2xl sm:p-10">
         <button
           ref={closeRef}
           type="button"
@@ -117,7 +110,7 @@ export default function WelcomePopup({
         </h2>
 
         {content.body && (
-          <p className="mx-auto mt-4 max-w-sm text-sm text-ink-soft">
+          <p id="welcome-popup-body" className="mx-auto mt-4 max-w-sm text-sm text-ink-soft">
             {content.body}
           </p>
         )}

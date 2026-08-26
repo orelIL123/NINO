@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import LocaleSwitcher from "./LocaleSwitcher";
 import type { NavGroup } from "./Header";
@@ -14,6 +14,7 @@ import {
   InstagramIcon,
   UserIcon,
 } from "@/components/ui/Icons";
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 
 export default function MobileNav({
   open,
@@ -26,6 +27,9 @@ export default function MobileNav({
 }) {
   const { dict, href } = useLocale();
   const [expanded, setExpanded] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(dialogRef, open, onClose);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -38,6 +42,7 @@ export default function MobileNav({
     <div
       className={`fixed inset-0 z-50 lg:hidden ${open ? "" : "pointer-events-none"}`}
       aria-hidden={!open}
+      inert={!open ? true : undefined}
     >
       <div
         onClick={onClose}
@@ -47,6 +52,7 @@ export default function MobileNav({
       />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={dict.header.menu}
@@ -63,7 +69,7 @@ export default function MobileNav({
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-5 py-4">
+        <nav aria-label={dict.header.menu} className="flex-1 overflow-y-auto px-5 py-4">
           <ul className="divide-y divide-line">
             {nav.map((item) => (
               <li key={item.key} className="py-1">
@@ -155,6 +161,7 @@ export default function MobileNav({
           >
             <InstagramIcon size={19} />
             {SITE.instagramHandle}
+            <span className="sr-only">(opens in a new window)</span>
           </a>
         </div>
       </div>
