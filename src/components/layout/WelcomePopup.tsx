@@ -62,8 +62,6 @@ export default function WelcomePopup({
     };
   }, [open]);
 
-  useFocusTrap(dialogRef, open, dismiss);
-
   const dismiss = useCallback(() => {
     setOpen(false);
     try {
@@ -72,6 +70,8 @@ export default function WelcomePopup({
       /* dismissal simply will not persist */
     }
   }, [content.version]);
+
+  useFocusTrap(dialogRef, open, dismiss);
 
   if (!open) return null;
 

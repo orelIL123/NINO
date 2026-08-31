@@ -7,6 +7,7 @@ import { getFacets, getProducts } from "@/lib/api/products";
 import type { Category, ProductQuery, SortKey } from "@/lib/data/types";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { localeHref, type Locale } from "@/lib/i18n/config";
+import EmptyProducts from "@/components/product/EmptyProducts";
 
 export type CollectionSearchParams = Record<string, string | string[] | undefined>;
 
@@ -93,9 +94,7 @@ export default async function CollectionView({
 
       <Filters facets={facets} total={products.length}>
         {products.length === 0 ? (
-          <div className="border border-line py-24 text-center">
-            <p className="text-sm text-ink-soft">{dict.listing.noResults}</p>
-          </div>
+            <EmptyProducts locale={locale} />
         ) : (
           <ProductGrid
             products={products}

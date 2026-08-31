@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" role="img" aria-labelledby="title desc">
+  <title id="title">NINO — פריטים בקרוב</title>
+  <desc id="desc">רקע בהיר עם קווים עדינים בגווני חול, עבור קטגוריה שעדיין אין בה פריטים.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7f4ee"/><stop offset="1" stop-color="#e8ddd0"/></linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c99f68" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity=".8"/><stop offset="1" stop-color="#c99f68" stop-opacity=".1"/></linearGradient>
+  </defs>
+  <rect width="1200" height="1500" fill="url(#bg)"/>
+  <path d="M-100 360C260 40 540 620 1320 160M-160 1170C320 760 640 1400 1370 980" fill="none" stroke="url(#line)" stroke-width="28"/>
+  <circle cx="930" cy="320" r="220" fill="#fff" opacity=".32"/>
+  <text x="600" y="720" text-anchor="middle" fill="#191714" font-family="Georgia,serif" font-size="88" letter-spacing="14">NINO</text>
+  <text x="600" y="820" text-anchor="middle" fill="#5f554c" font-family="Arial,sans-serif" font-size="28" letter-spacing="7">COMING SOON</text>
+</svg>

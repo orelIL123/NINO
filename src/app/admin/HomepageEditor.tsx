@@ -212,8 +212,9 @@ export default function HomepageEditor() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={image} alt="" className="h-full w-full object-cover" />
                       ) : (
-                        <div className="flex h-full items-center justify-center px-4 text-center text-sm text-black/40">
-                          התמונה תופיע עם העלאת המוצר הראשון
+                        <div className="relative h-full">
+                          <img src="/media/coming-soon.svg" alt="אין מוצרים עדיין — יתווספו פריטים בקרוב" className="h-full w-full object-cover opacity-70" />
+                          <span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">יתווספו פריטים בקרוב</span>
                         </div>
                       )}
                       <span className="absolute right-2 top-2 rounded-full bg-black/80 px-2.5 py-1 text-[11px] text-white">
@@ -273,8 +274,9 @@ export default function HomepageEditor() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center px-4 text-center text-sm text-black/40">
-                        כרגע מוצגת תמונת ברירת המחדל
+                      <div className="relative h-full">
+                        <img src="/media/coming-soon.svg" alt="אין תמונה — יתווספו פריטים בקרוב" className="h-full w-full object-cover opacity-70" />
+                        <span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">תמונת ברירת מחדל</span>
                       </div>
                     )}
                   </div>
@@ -333,7 +335,7 @@ export default function HomepageEditor() {
                   {visit.collectionImage ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={visit.collectionImage} alt="" className="h-full w-full object-cover" />
-                  ) : <div className="flex h-full items-center justify-center text-sm text-black/40">תמונת ברירת מחדל</div>}
+                  ) : <div className="relative h-full"><img src="/media/coming-soon.svg" alt="אין תמונה — יתווספו פריטים בקרוב" className="h-full w-full object-cover opacity-70" /><span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">תמונת ברירת מחדל</span></div>}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <label className="cursor-pointer rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white">{busyKey === visit.key ? "שומר…" : "העלאת תמונה"}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busyKey === visit.key} onChange={(event) => { void upload(visit, event.target.files?.[0]); event.target.value = ""; }} /></label>

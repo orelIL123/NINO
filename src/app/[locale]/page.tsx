@@ -9,6 +9,7 @@ import EditorialBanner from "@/components/home/EditorialBanner";
 import CategoryTiles, { tilesFromProducts } from "@/components/home/CategoryTiles";
 import ProductRail from "@/components/product/ProductRail";
 import ProductCard from "@/components/product/ProductCard";
+import EmptyProducts from "@/components/product/EmptyProducts";
 import {
   getCategoryLabel,
   getNewItemsCount,
@@ -116,7 +117,7 @@ export default async function HomePage({
           linkLabel={dict.common.viewAll}
         />
         <ProductRail>
-          {newArrivals.map((product) => (
+          {newArrivals.length === 0 ? <EmptyProducts locale={locale} compact /> : newArrivals.map((product) => (
             <div
               key={product.slug}
               className="w-[46vw] shrink-0 snap-start sm:w-[31vw] lg:w-[23%] xl:w-[19%]"
@@ -143,7 +144,7 @@ export default async function HomePage({
       {/* Category tiles --------------------------------------------------- */}
       <Reveal as="section" className="container-nino py-14">
         <SectionHeader title={dict.home.categoriesTitle} align="center" />
-        <CategoryTiles tiles={tiles} />
+        <CategoryTiles tiles={tiles} locale={locale} />
       </Reveal>
 
       {/* Clothing / Shoes -------------------------------------------------------- */}
@@ -194,7 +195,7 @@ export default async function HomePage({
           linkLabel={dict.common.viewAll}
         />
         <ProductRail>
-          {bestSellers.map((product) => (
+          {bestSellers.length === 0 ? <EmptyProducts locale={locale} compact /> : bestSellers.map((product) => (
             <div
               key={product.slug}
               className="w-[46vw] shrink-0 snap-start sm:w-[31vw] lg:w-[23%] xl:w-[19%]"

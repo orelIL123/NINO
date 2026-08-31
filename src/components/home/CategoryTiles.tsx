@@ -8,9 +8,10 @@ export interface Tile {
   label: string;
   href: string;
   image: string;
+  isEmpty?: boolean;
 }
 
-export default function CategoryTiles({ tiles }: { tiles: Tile[] }) {
+export default function CategoryTiles({ tiles, locale = "he" }: { tiles: Tile[]; locale?: Locale }) {
   return (
     <div className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-4">
       {tiles.map((tile) => (
@@ -24,6 +25,7 @@ export default function CategoryTiles({ tiles }: { tiles: Tile[] }) {
               loading="lazy"
               className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
             />
+            {tile.isEmpty && <span className="absolute inset-0 flex items-center justify-center bg-black/20 px-3 text-center text-sm font-medium text-white">{locale === "he" ? "יתווספו פריטים בקרוב" : "More pieces coming soon"}</span>}
           </div>
           <p className="mt-3 text-center text-xs tracking-[0.14em] uppercase">
             <span className="link-underline">{tile.label}</span>
@@ -48,7 +50,7 @@ export function tilesFromProducts(
   return entries.map((e) => ({
     label: e.label,
     href: localeHref(locale, e.href ?? `/category/${e.slug}`),
-    image:
-      e.overrideImage ?? e.product?.images[0] ?? "/media/editorial-1.svg",
+    image: e.overrideImage ?? e.product?.images[0] ?? "/media/coming-soon.svg",
+    isEmpty: !e.overrideImage && !e.product,
   }));
 }
