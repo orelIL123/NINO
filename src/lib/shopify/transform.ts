@@ -64,13 +64,16 @@ function toGender(tags: string[]): Gender {
 function toGroup(
   tags: string[],
   collections: string[],
-  onSale: boolean
+  onSale: boolean,
+  productType: string
 ): Category["group"] {
   if (onSale) return "sale";
   for (const key of [...tags, ...collections].map((v) => v.toLowerCase())) {
     const group = GROUP_TAGS[key];
     if (group) return group;
   }
+  if (["Sneakers", "Boots", "Sandals & slides"].includes(productType)) return "shoes";
+  if (["Bags", "Hats", "Belts", "Sunglasses", "Scarves"].includes(productType)) return "accessories";
   return "clothing";
 }
 
@@ -133,7 +136,7 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
         collections[0] ||
         "clothing"
     ),
-    group: toGroup(he.tags, collections, onSale),
+    group: toGroup(he.tags, collections, onSale, he.productType),
     gender: toGender(he.tags),
     price,
     ...(onSale ? { compareAtPrice: compareAt } : {}),
