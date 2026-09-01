@@ -3,6 +3,7 @@ import type { ShopifyProduct, ShopifyVariant } from "./types";
 
 import type { Category, Gender, Localized, Product } from "@/lib/data/types";
 import type { Locale } from "@/lib/i18n/config";
+import { MERCHANDISING_CATEGORIES } from "@/lib/admin/product-conventions";
 
 /* -------------------------------------------------------------------------- */
 /*  SHOPIFY -> APP MODEL                                                      */
@@ -26,6 +27,10 @@ const GROUP_TAGS: Record<string, Category["group"]> = {
 };
 
 const CATEGORY_TAG_PREFIX = "category:";
+
+const DEFAULT_CATEGORY_BY_PRODUCT_TYPE: Record<string, string> = {
+  "Jackets & coats": "outerwear",
+};
 
 export function slugify(value: string): string {
   return value
@@ -83,7 +88,12 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
 
   const collections = he.collections.edges.map((e) => e.node.handle);
   const categoryTag = he.tags.find((tag) => tag.toLowerCase().startsWith(CATEGORY_TAG_PREFIX));
-  const merchandisingCategory = categoryTag?.slice(CATEGORY_TAG_PREFIX.length);
+  const taggedCategory = categoryTag?.slice(CATEGORY_TAG_PREFIX.length);
+  const merchandisingCategory = MERCHANDISING_CATEGORIES.some(
+    (category) => category.slug === taggedCategory && category.type === he.productType
+  )
+    ? taggedCategory
+    : undefined;
 
   // Sizes come from the variant matrix; a variant with no size option still
   // needs one row so "add to cart" has something to select.
@@ -116,7 +126,13 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
       en: en.description.split("\n").filter(Boolean),
     },
     brand: slugify(he.vendor || "nino"),
-    category: slugify(merchandisingCategory || he.productType || collections[0] || "clothing"),
+    category: slugify(
+      merchandisingCategory ||
+        DEFAULT_CATEGORY_BY_PRODUCT_TYPE[he.productType] ||
+        he.productType ||
+        collections[0] ||
+        "clothing"
+    ),
     group: toGroup(he.tags, collections, onSale),
     gender: toGender(he.tags),
     price,
