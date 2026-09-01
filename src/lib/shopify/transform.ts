@@ -1,7 +1,14 @@
 import { idFromGid } from "./client";
 import type { ShopifyProduct, ShopifyVariant } from "./types";
 
-import type { Category, Gender, Localized, Product } from "@/lib/data/types";
+import type {
+  Category,
+  Gender,
+  Localized,
+  Product,
+  ProductColorOption,
+} from "@/lib/data/types";
+import { PRODUCT_COLORS } from "@/lib/admin/product-conventions";
 import type { Locale } from "@/lib/i18n/config";
 
 /* -------------------------------------------------------------------------- */
@@ -49,6 +56,17 @@ function localized(he: string, en: string): Localized {
   return { he: he || en, en: en || he };
 }
 
+function colorHex(...names: Array<string | undefined>): string {
+  const normalized = names
+    .filter((name): name is string => Boolean(name))
+    .map((name) => name.trim().toLowerCase());
+  return PRODUCT_COLORS.find(
+    (color) =>
+      normalized.includes(color.value.toLowerCase()) ||
+      normalized.includes(color.label.toLowerCase())
+  )?.hex ?? "#777777";
+}
+
 function toGender(tags: string[]): Gender {
   const lower = tags.map((t) => t.toLowerCase());
   if (lower.includes("women") || lower.includes("נשים")) return "women";
@@ -76,6 +94,7 @@ function toGroup(
 export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
   const variants = he.variants.edges.map((e) => e.node);
   const first = variants[0];
+  const englishVariants = new Map(en.variants.edges.map(({ node }) => [node.id, node]));
 
   const price = Number(he.priceRange.minVariantPrice.amount);
   const compareAt = Number(he.compareAtPriceRange.minVariantPrice.amount);
@@ -85,12 +104,44 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
   const categoryTag = he.tags.find((tag) => tag.toLowerCase().startsWith(CATEGORY_TAG_PREFIX));
   const merchandisingCategory = categoryTag?.slice(CATEGORY_TAG_PREFIX.length);
 
-  // Sizes come from the variant matrix; a variant with no size option still
-  // needs one row so "add to cart" has something to select.
-  const sizes = variants.map((v) => ({
-    label: optionValue(v, SIZE_OPTIONS) ?? v.title,
-    stock: v.availableForSale ? (v.quantityAvailable ?? 99) : 0,
+  // Group the Shopify variant matrix by colour. This preserves inventory for
+  // every size/colour pair instead of treating the first colour as the product.
+  const colorGroups = new Map<string, ProductColorOption>();
+  variants.forEach((variant) => {
+    const englishVariant = englishVariants.get(variant.id);
+    const colorHe = optionValue(variant, COLOR_OPTIONS) ?? "";
+    const colorEn = englishVariant
+      ? optionValue(englishVariant, COLOR_OPTIONS) ?? colorHe
+      : colorHe;
+    const key = (colorEn || colorHe || "default").trim().toLowerCase();
+    const size = optionValue(variant, SIZE_OPTIONS) ?? variant.title;
+    const group = colorGroups.get(key) ?? {
+      key,
+      name: localized(colorHe, colorEn),
+      hex: colorHex(colorEn, colorHe),
+      sizes: [],
+    };
+    if (!group.sizes.some((item) => item.label === size)) {
+      group.sizes.push({
+        label: size,
+        stock: variant.availableForSale ? (variant.quantityAvailable ?? 99) : 0,
+        variantId: variant.id,
+      });
+    }
+    colorGroups.set(key, group);
+  });
+
+  const colorOptions = [...colorGroups.values()];
+  const aggregateSizes = new Map<string, Product["sizes"][number]>();
+  colorOptions.forEach((color) => color.sizes.forEach((size) => {
+    const current = aggregateSizes.get(size.label);
+    aggregateSizes.set(size.label, {
+      label: size.label,
+      stock: (current?.stock ?? 0) + size.stock,
+      variantId: current?.variantId ?? size.variantId,
+    });
   }));
+  const sizes = [...aggregateSizes.values()];
 
   const totalStock = sizes.reduce((sum, s) => sum + s.stock, 0);
 
@@ -100,10 +151,7 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
   if (lowerTags.includes("bestseller")) badges.push("bestseller");
   if (totalStock > 0 && totalStock <= 3) badges.push("last-units");
 
-  const colorName = first ? optionValue(first, COLOR_OPTIONS) : undefined;
-  const colorNameEn = en.variants.edges[0]?.node
-    ? optionValue(en.variants.edges[0].node, COLOR_OPTIONS)
-    : undefined;
+  const defaultColor = colorOptions[0];
 
   return {
     id: idFromGid(he.id),
@@ -122,9 +170,10 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
     price,
     ...(onSale ? { compareAtPrice: compareAt } : {}),
     color: {
-      name: localized(colorName ?? "", colorNameEn ?? ""),
-      hex: "#000000",
+      name: defaultColor?.name ?? localized("", ""),
+      hex: defaultColor?.hex ?? "#777777",
     },
+    colorOptions,
     sizes,
     images: he.images.edges.map((e) => e.node.url),
     badges,

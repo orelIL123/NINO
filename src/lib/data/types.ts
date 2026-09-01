@@ -26,6 +26,15 @@ export interface Category {
 export interface ProductSize {
   label: string;
   stock: number;
+  /** Shopify variant selected by this size/colour combination. */
+  variantId?: string;
+}
+
+export interface ProductColorOption {
+  key: string;
+  name: Localized;
+  hex: string;
+  sizes: ProductSize[];
 }
 
 export interface Product {
@@ -44,6 +53,8 @@ export interface Product {
   /** Original price when the item is discounted. */
   compareAtPrice?: number;
   color: { name: Localized; hex: string };
+  /** Colours that belong to this Shopify product, each with its own stock matrix. */
+  colorOptions?: ProductColorOption[];
   /** Other colourways of the same style (product slugs). */
   relatedColors?: string[];
   sizes: ProductSize[];
@@ -61,6 +72,7 @@ export interface Product {
  * wired up, re-validate price and stock server-side at checkout.
  */
 export interface CartLine {
+  variantId?: string;
   productId: string;
   slug: string;
   size: string;

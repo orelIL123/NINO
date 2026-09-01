@@ -17,16 +17,21 @@ export default function PurchasePanel({
 }) {
   const { dict, locale } = useLocale();
   const { addToCart } = useStore();
+  const colors = product.colorOptions?.length
+    ? product.colorOptions
+    : [{ key: "default", name: product.color.name, hex: product.color.hex, sizes: product.sizes }];
+  const [colorKey, setColorKey] = useState(colors[0].key);
+  const selectedColor = colors.find((color) => color.key === colorKey) ?? colors[0];
   const [size, setSize] = useState<string | null>(
-    product.sizes.length === 1 && product.sizes[0].stock > 0
-      ? product.sizes[0].label
+    selectedColor.sizes.length === 1 && selectedColor.sizes[0].stock > 0
+      ? selectedColor.sizes[0].label
       : null
   );
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(false);
 
-  const soldOut = product.sizes.every((s) => s.stock === 0);
-  const selected = product.sizes.find((s) => s.label === size);
+  const soldOut = colors.every((color) => color.sizes.every((item) => item.stock === 0));
+  const selected = selectedColor.sizes.find((item) => item.label === size);
 
   const submit = () => {
     if (!size) {
@@ -35,6 +40,7 @@ export default function PurchasePanel({
     }
     addToCart({
       productId: product.id,
+      variantId: selected?.variantId,
       slug: product.slug,
       size,
       quantity,
@@ -42,12 +48,51 @@ export default function PurchasePanel({
       brand: brandName,
       price: product.price,
       image: product.images[0],
-      color: product.color.name[locale],
+      color: selectedColor.name[locale],
     });
   };
 
   return (
     <div className="space-y-5">
+      {colors.length > 1 && (
+        <div>
+          <div className="mb-2.5 flex items-baseline gap-2">
+            <span className="eyebrow">{dict.product.color}</span>
+            <span className="text-xs text-ink-muted">{selectedColor.name[locale]}</span>
+          </div>
+          <div className="flex flex-wrap gap-3" role="group" aria-label={dict.product.color}>
+            {colors.map((color) => {
+              const active = color.key === selectedColor.key;
+              const unavailable = color.sizes.every((item) => item.stock === 0);
+              return (
+                <button
+                  key={color.key}
+                  type="button"
+                  title={color.name[locale]}
+                  aria-label={color.name[locale]}
+                  aria-pressed={active}
+                  onClick={() => {
+                    setColorKey(color.key);
+                    const available = color.sizes.filter((item) => item.stock > 0);
+                    setSize(available.length === 1 ? available[0].label : null);
+                    setQuantity(1);
+                    setError(false);
+                  }}
+                  className={`relative h-8 w-8 rounded-full border-2 p-0.5 transition ${
+                    active ? "border-ink" : "border-transparent hover:border-line-strong"
+                  } ${unavailable ? "opacity-40" : ""}`}
+                >
+                  <span
+                    className="block h-full w-full rounded-full border border-black/15"
+                    style={{ backgroundColor: color.hex }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Sizes ---------------------------------------------------------- */}
       <div>
         <div className="mb-2.5 flex items-baseline justify-between">
@@ -55,7 +100,7 @@ export default function PurchasePanel({
           <span className="text-xs text-ink-muted">{dict.product.sizeGuide}</span>
         </div>
         <div className="flex flex-wrap gap-2">
-          {product.sizes.map((s) => {
+          {selectedColor.sizes.map((s) => {
             const disabled = s.stock === 0;
             const active = s.label === size;
             return (
@@ -131,7 +176,7 @@ export default function PurchasePanel({
             brand: brandName,
             price: product.price,
             image: product.images[0],
-            color: product.color.name[locale],
+            color: selectedColor.name[locale],
           }}
         />
       </div>

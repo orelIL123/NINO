@@ -120,11 +120,39 @@ const VARIANTS_CREATE_MUTATION = /* GraphQL */ `
           id
           tracked
         }
+        selectedOptions {
+          name
+          value
+        }
       }
       userErrors {
         field
         message
         code
+      }
+    }
+  }
+`;
+
+const PRODUCT_VARIANT_MATRIX_QUERY = /* GraphQL */ `
+  query ProductVariantMatrix($id: ID!) {
+    product(id: $id) {
+      id
+      handle
+      options {
+        id
+        name
+        values
+      }
+      variants(first: 250) {
+        nodes {
+          id
+          price
+          selectedOptions {
+            name
+            value
+          }
+        }
       }
     }
   }
@@ -290,6 +318,23 @@ interface ProductActionBody {
   productId?: unknown;
   price?: unknown;
   variants?: unknown;
+  color?: unknown;
+  sizes?: unknown;
+}
+
+interface ProductVariantMatrixResponse {
+  product: {
+    id: string;
+    handle: string;
+    options: Array<{ id: string; name: string; values: string[] }>;
+    variants: {
+      nodes: Array<{
+        id: string;
+        price: string;
+        selectedOptions: Array<{ name: string; value: string }>;
+      }>;
+    };
+  } | null;
 }
 
 function normalizeText(value: unknown, max: number): string {
@@ -690,13 +735,111 @@ export async function PATCH(request: Request) {
   const body = (await request.json().catch(() => null)) as ProductActionBody | null;
   const action = body?.action;
   const productId = typeof body?.productId === "string" ? body.productId.trim() : "";
-  if ((action !== "price" && action !== "sold_out") || !/^gid:\/\/shopify\/Product\/\d+$/.test(productId)) {
+  if (
+    (action !== "price" && action !== "sold_out" && action !== "add_color") ||
+    !/^gid:\/\/shopify\/Product\/\d+$/.test(productId)
+  ) {
     return NextResponse.json({ ok: false, error: "invalid_product_action" }, { status: 400 });
   }
   try {
     const context = await shopifyAdmin<AdminContext>(ADMIN_CONTEXT_QUERY);
     const location = context.locations.nodes.find((item) => item.isActive);
     if (!location) throw new Error("No active Shopify inventory location was found");
+    if (action === "add_color") {
+      const color = normalizeText(body?.color, 80);
+      const requestedSizes = Array.isArray(body?.sizes)
+        ? body.sizes
+            .map((item) => item as Record<string, unknown>)
+            .map((item) => ({
+              size: normalizeText(item.size, 40),
+              stock: Number(item.stock),
+            }))
+            .filter(
+              (item) =>
+                item.size &&
+                Number.isInteger(item.stock) &&
+                item.stock >= 0 &&
+                item.stock <= 1_000_000
+            )
+        : [];
+      if (!color || !requestedSizes.length) {
+        return NextResponse.json(
+          { ok: false, error: "יש לבחור צבע ולהזין מלאי עבור מידה אחת לפחות" },
+          { status: 400 }
+        );
+      }
+
+      const matrix = await shopifyAdmin<ProductVariantMatrixResponse>(
+        PRODUCT_VARIANT_MATRIX_QUERY,
+        { id: productId }
+      );
+      const product = matrix.product;
+      if (!product) throw new Error("המוצר לא נמצא ב־Shopify");
+      const sizeOption = product.options.find((option) =>
+        ["size", "מידה"].includes(option.name.trim().toLowerCase())
+      );
+      const colorOption = product.options.find((option) =>
+        ["color", "colour", "צבע"].includes(option.name.trim().toLowerCase())
+      );
+      if (!sizeOption || !colorOption) {
+        throw new Error('למוצר חייבות להיות אפשרויות בשם המדויק "Size" ו־"Color"');
+      }
+      const existingColors = new Set(
+        product.variants.nodes
+          .map((variant) =>
+            variant.selectedOptions.find((option) => option.name === colorOption.name)?.value
+          )
+          .filter((value): value is string => Boolean(value))
+          .map((value) => value.trim().toLowerCase())
+      );
+      if (existingColors.has(color.toLowerCase())) {
+        return NextResponse.json(
+          { ok: false, error: "הצבע הזה כבר קיים במוצר" },
+          { status: 409 }
+        );
+      }
+      const allowedSizes = new Set(sizeOption.values);
+      const sizes = requestedSizes.filter((item) => allowedSizes.has(item.size));
+      if (!sizes.length || sizes.length !== requestedSizes.length) {
+        return NextResponse.json(
+          { ok: false, error: "אחת המידות אינה קיימת במוצר" },
+          { status: 400 }
+        );
+      }
+      const price = product.variants.nodes[0]?.price;
+      if (!price) throw new Error("לא נמצא מחיר למוצר");
+      const prefix = skuPart(product.handle) || "NINO";
+      const result = await shopifyAdmin<VariantsCreateResponse>(
+        VARIANTS_CREATE_MUTATION,
+        {
+          productId,
+          variants: sizes.map(({ size, stock }) => ({
+            price,
+            taxable: true,
+            inventoryPolicy: "DENY",
+            inventoryItem: {
+              sku: `${prefix}-${skuPart(color)}-${skuPart(size)}`.slice(0, 64),
+              tracked: true,
+              requiresShipping: true,
+            },
+            inventoryQuantities: [
+              { locationId: location.id, availableQuantity: stock },
+            ],
+            optionValues: [
+              { optionName: sizeOption.name, name: size },
+              { optionName: colorOption.name, name: color },
+            ],
+          })),
+        }
+      );
+      assertNoUserErrors(
+        result.productVariantsBulkCreate.userErrors,
+        "Could not add product colour"
+      );
+      revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
+      return NextResponse.json({ ok: true, created: sizes.length });
+    }
+
     const variants = Array.isArray(body?.variants)
       ? body.variants.filter(
           (item): item is { id: string; inventoryItemId: string } =>

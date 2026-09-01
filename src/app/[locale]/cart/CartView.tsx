@@ -54,7 +54,7 @@ export default function CartView() {
         <ul className="divide-y divide-line border-y border-line">
           {cart.map((line) => (
             <li
-              key={`${line.slug}-${line.size}`}
+              key={`${line.slug}-${line.size}-${line.color}`}
               className="flex gap-4 py-6 md:gap-6"
             >
               <Link
@@ -85,11 +85,11 @@ export default function CartView() {
                 <div className="mt-auto flex flex-wrap items-center gap-4 pt-4">
                   <QuantityStepper
                     value={line.quantity}
-                    onChange={(q) => setQuantity(line.slug, line.size, q)}
+                    onChange={(q) => setQuantity(line.slug, line.size, line.color, q)}
                   />
                   <button
                     type="button"
-                    onClick={() => removeFromCart(line.slug, line.size)}
+                    onClick={() => removeFromCart(line.slug, line.size, line.color)}
                     className="flex items-center gap-1.5 text-xs text-ink-muted transition-colors hover:text-ink"
                   >
                     <TrashIcon size={15} />

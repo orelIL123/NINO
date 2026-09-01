@@ -83,7 +83,7 @@ export default function CartDrawer() {
 
             <ul className="flex-1 divide-y divide-line overflow-y-auto px-5">
               {cart.map((line) => (
-                <li key={`${line.slug}-${line.size}`} className="flex gap-4 py-5">
+                <li key={`${line.slug}-${line.size}-${line.color}`} className="flex gap-4 py-5">
                   <Link
                     href={href(`/product/${line.slug}`)}
                     onClick={closeDrawer}
@@ -114,7 +114,7 @@ export default function CartDrawer() {
                     <div className="mt-2.5 flex items-center justify-between gap-2">
                       <QuantityStepper
                         value={line.quantity}
-                        onChange={(q) => setQuantity(line.slug, line.size, q)}
+                        onChange={(q) => setQuantity(line.slug, line.size, line.color, q)}
                       />
                       <span className="text-sm">
                         {formatPrice(line.price * line.quantity, locale)}
@@ -124,7 +124,7 @@ export default function CartDrawer() {
 
                   <button
                     type="button"
-                    onClick={() => removeFromCart(line.slug, line.size)}
+                    onClick={() => removeFromCart(line.slug, line.size, line.color)}
                     aria-label={dict.cart.remove}
                     className="self-start p-1 text-ink-muted transition-colors hover:text-ink"
                   >

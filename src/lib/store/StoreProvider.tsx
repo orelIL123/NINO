@@ -22,8 +22,8 @@ type State = { cart: CartLine[]; wishlist: WishlistItem[]; ready: boolean };
 type Action =
   | { type: "hydrate"; cart: CartLine[]; wishlist: WishlistItem[] }
   | { type: "add"; line: CartLine }
-  | { type: "remove"; slug: string; size: string }
-  | { type: "qty"; slug: string; size: string; quantity: number }
+  | { type: "remove"; slug: string; size: string; color: string }
+  | { type: "qty"; slug: string; size: string; color: string; quantity: number }
   | { type: "clear" }
   | { type: "wishlist"; item: WishlistItem };
 
@@ -33,7 +33,10 @@ function reducer(state: State, action: Action): State {
       return { cart: action.cart, wishlist: action.wishlist, ready: true };
     case "add": {
       const i = state.cart.findIndex(
-        (l) => l.slug === action.line.slug && l.size === action.line.size
+        (l) =>
+          l.slug === action.line.slug &&
+          l.size === action.line.size &&
+          l.color === action.line.color
       );
       if (i === -1) return { ...state, cart: [...state.cart, action.line] };
       const cart = [...state.cart];
@@ -47,7 +50,8 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         cart: state.cart.filter(
-          (l) => !(l.slug === action.slug && l.size === action.size)
+          (l) =>
+            !(l.slug === action.slug && l.size === action.size && l.color === action.color)
         ),
       };
     case "qty":
@@ -55,7 +59,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         cart: state.cart
           .map((l) =>
-            l.slug === action.slug && l.size === action.size
+            l.slug === action.slug && l.size === action.size && l.color === action.color
               ? { ...l, quantity: action.quantity }
               : l
           )
@@ -86,8 +90,8 @@ interface StoreValue extends State {
   openDrawer: () => void;
   closeDrawer: () => void;
   addToCart: (line: CartLine) => void;
-  removeFromCart: (slug: string, size: string) => void;
-  setQuantity: (slug: string, size: string, quantity: number) => void;
+  removeFromCart: (slug: string, size: string, color: string) => void;
+  setQuantity: (slug: string, size: string, color: string, quantity: number) => void;
   clearCart: () => void;
   toggleWishlist: (item: WishlistItem) => void;
   inWishlist: (slug: string) => boolean;
@@ -160,9 +164,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       openDrawer: () => setDrawerOpen(true),
       closeDrawer: () => setDrawerOpen(false),
       addToCart,
-      removeFromCart: (slug, size) => dispatch({ type: "remove", slug, size }),
-      setQuantity: (slug, size, quantity) =>
-        dispatch({ type: "qty", slug, size, quantity }),
+      removeFromCart: (slug, size, color) =>
+        dispatch({ type: "remove", slug, size, color }),
+      setQuantity: (slug, size, color, quantity) =>
+        dispatch({ type: "qty", slug, size, color, quantity }),
       clearCart: () => dispatch({ type: "clear" }),
       toggleWishlist: (item) => dispatch({ type: "wishlist", item }),
       inWishlist: (slug) => state.wishlist.some((w) => w.slug === slug),
