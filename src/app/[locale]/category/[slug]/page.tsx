@@ -9,6 +9,7 @@ import { isLocale, locales, localeHref } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
 type Params = Promise<{ locale: string; slug: string }>;
+export const dynamic = "force-dynamic";
 
 export async function generateStaticParams() {
   const categories = await getCategories();

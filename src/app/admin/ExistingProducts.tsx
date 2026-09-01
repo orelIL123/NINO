@@ -3,7 +3,10 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { PRODUCT_COLORS } from "@/lib/admin/product-conventions";
+import {
+  MERCHANDISING_CATEGORIES,
+  PRODUCT_COLORS,
+} from "@/lib/admin/product-conventions";
 
 type ExistingProduct = {
   id: string;
@@ -11,6 +14,7 @@ type ExistingProduct = {
   title: string;
   vendor: string;
   productType: string;
+  tags: string[];
   status: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
   totalInventory: number;
   variants: {
@@ -49,6 +53,7 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
   const [colorStocks, setColorStocks] = useState<Record<string, Record<string, string>>>({});
   const [addingColorId, setAddingColorId] = useState<string | null>(null);
   const [colorSuccessId, setColorSuccessId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Record<string, string>>({});
 
   const loadProducts = useCallback(async () => {
     try {
@@ -96,6 +101,10 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
         setError("");
         setProducts(data.products);
         setPrices(Object.fromEntries(data.products.map((product) => [product.id, product.variants.nodes[0]?.price || ""])));
+        setCategories(Object.fromEntries(data.products.map((product) => [
+          product.id,
+          product.tags.find((tag) => tag.toLowerCase().startsWith("category:"))?.slice(9) || "",
+        ])));
         setTruncated(Boolean(data.truncated));
       })
       .catch(() => {
@@ -210,7 +219,7 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
     }
   }
 
-  async function updateProduct(product: ExistingProduct, action: "price" | "sold_out") {
+  async function updateProduct(product: ExistingProduct, action: "price" | "sold_out" | "category") {
     if (action === "sold_out" && !window.confirm(`לסמן את “${product.title}” כאזל מהמלאי?`)) return;
     const variants = product.variants.nodes
       .filter((variant) => variant.inventoryItem)
@@ -221,7 +230,7 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
       const response = await fetch("/api/admin/products", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, action, price: prices[product.id], variants }),
+        body: JSON.stringify({ productId: product.id, action, price: prices[product.id], variants, category: categories[product.id] }),
       });
       const data = (await response.json()) as { ok: boolean; error?: string };
       if (!response.ok || !data.ok) throw new Error(data.error || "השינוי נכשל");
@@ -313,6 +322,28 @@ export default function ExistingProducts({ refreshKey }: { refreshKey: number })
                     <input id={`price-${product.id}`} type="number" min="0.01" step="0.01" value={prices[product.id] || ""} onChange={(event) => setPrices((current) => ({ ...current, [product.id]: event.target.value }))} className="w-24 rounded-lg border border-black/15 px-2 py-1.5 text-xs" />
                     <button type="button" onClick={() => void updateProduct(product, "price")} disabled={updatingId === product.id} className="rounded-lg border border-black/15 px-2.5 py-1.5 text-xs font-semibold disabled:opacity-50">עדכון מחיר</button>
                     <button type="button" onClick={() => void updateProduct(product, "sold_out")} disabled={updatingId === product.id || product.totalInventory === 0} className="rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-red-700 disabled:opacity-50">{product.totalInventory === 0 ? "אזל" : "סמן כאזל"}</button>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <label className="sr-only" htmlFor={`category-${product.id}`}>קטגוריית אתר</label>
+                    <select
+                      id={`category-${product.id}`}
+                      value={categories[product.id] || ""}
+                      onChange={(event) => setCategories((current) => ({ ...current, [product.id]: event.target.value }))}
+                      className="min-w-36 rounded-lg border border-black/15 px-2 py-1.5 text-xs"
+                    >
+                      <option value="">בחירת קטגוריה</option>
+                      {MERCHANDISING_CATEGORIES.map((category) => (
+                        <option key={category.slug} value={category.slug}>{category.label}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => void updateProduct(product, "category")}
+                      disabled={updatingId === product.id || !categories[product.id]}
+                      className="rounded-lg border border-black/15 px-2.5 py-1.5 text-xs font-semibold disabled:opacity-50"
+                    >
+                      עדכון קטגוריה
+                    </button>
                   </div>
                   {product.variants.nodes.length > 0 && (
                     <div className="mt-2 space-y-0.5 text-[11px] text-black/55">

@@ -5,6 +5,7 @@ import { isAdminAuthenticated, isSameOrigin } from "@/lib/admin/auth";
 import {
   groupForProductType,
   isProductType,
+  MERCHANDISING_CATEGORIES,
   type AdminProductDraft,
 } from "@/lib/admin/product-conventions";
 import {
@@ -44,6 +45,7 @@ const ADMIN_PRODUCTS_QUERY = /* GraphQL */ `
         title
         vendor
         productType
+        tags
         status
         totalInventory
         variants(first: 100) {
@@ -173,6 +175,12 @@ const PRODUCT_ACTIVATE_MUTATION = /* GraphQL */ `
   }
 `;
 
+const ADMIN_PRODUCT_TAGS_QUERY = /* GraphQL */ `
+  query AdminProductTags($id: ID!) {
+    product(id: $id) { id tags }
+  }
+`;
+
 const PRODUCT_PUBLISH_MUTATION = /* GraphQL */ `
   mutation PublishProduct($id: ID!, $input: [PublicationInput!]!) {
     publishablePublish(id: $id, input: $input) {
@@ -267,6 +275,7 @@ interface AdminProductListResponse {
       title: string;
       vendor: string;
       productType: string;
+      tags: string[];
       status: string;
       totalInventory: number;
       variants: {
@@ -320,6 +329,7 @@ interface ProductActionBody {
   variants?: unknown;
   color?: unknown;
   sizes?: unknown;
+  category?: unknown;
 }
 
 interface ProductVariantMatrixResponse {
@@ -736,12 +746,37 @@ export async function PATCH(request: Request) {
   const action = body?.action;
   const productId = typeof body?.productId === "string" ? body.productId.trim() : "";
   if (
-    (action !== "price" && action !== "sold_out" && action !== "add_color") ||
+    (action !== "price" &&
+      action !== "sold_out" &&
+      action !== "add_color" &&
+      action !== "category") ||
     !/^gid:\/\/shopify\/Product\/\d+$/.test(productId)
   ) {
     return NextResponse.json({ ok: false, error: "invalid_product_action" }, { status: 400 });
   }
   try {
+    if (action === "category") {
+      const category = normalizeText(body?.category, 80);
+      if (!category || !MERCHANDISING_CATEGORIES.some((item) => item.slug === category)) {
+        return NextResponse.json({ ok: false, error: "invalid_category" }, { status: 400 });
+      }
+      const current = await shopifyAdmin<{
+        product: { id: string; tags: string[] } | null;
+      }>(ADMIN_PRODUCT_TAGS_QUERY, { id: productId });
+      const product = current.product;
+      if (!product) throw new Error("Product not found");
+      const tags = [
+        ...product.tags.filter((tag) => !tag.toLowerCase().startsWith("category:")),
+        `category:${category}`,
+      ];
+      const updated = await shopifyAdmin<{ productUpdate: MutationErrors }>(
+        PRODUCT_ACTIVATE_MUTATION,
+        { product: { id: productId, tags } }
+      );
+      assertNoUserErrors(updated.productUpdate.userErrors, "Could not update category");
+      revalidateTag(SHOPIFY_CATALOG_CACHE_TAG, { expire: 0 });
+      return NextResponse.json({ ok: true, category });
+    }
     const context = await shopifyAdmin<AdminContext>(ADMIN_CONTEXT_QUERY);
     const location = context.locations.nodes.find((item) => item.isActive);
     if (!location) throw new Error("No active Shopify inventory location was found");

@@ -10,6 +10,7 @@ import type {
 } from "@/lib/data/types";
 import { PRODUCT_COLORS } from "@/lib/admin/product-conventions";
 import type { Locale } from "@/lib/i18n/config";
+import { MERCHANDISING_CATEGORIES } from "@/lib/admin/product-conventions";
 
 /* -------------------------------------------------------------------------- */
 /*  SHOPIFY -> APP MODEL                                                      */
@@ -23,8 +24,6 @@ const SIZE_OPTIONS = ["size", "מידה"];
 const COLOR_OPTIONS = ["color", "colour", "צבע"];
 
 const GROUP_TAGS: Record<string, Category["group"]> = {
-  new: "new",
-  "new-in": "new",
   clothing: "clothing",
   shoes: "shoes",
   footwear: "shoes",
@@ -33,6 +32,10 @@ const GROUP_TAGS: Record<string, Category["group"]> = {
 };
 
 const CATEGORY_TAG_PREFIX = "category:";
+
+const DEFAULT_CATEGORY_BY_PRODUCT_TYPE: Record<string, string> = {
+  "Jackets & coats": "outerwear",
+};
 
 export function slugify(value: string): string {
   return value
@@ -77,13 +80,16 @@ function toGender(tags: string[]): Gender {
 function toGroup(
   tags: string[],
   collections: string[],
-  onSale: boolean
+  onSale: boolean,
+  productType: string
 ): Category["group"] {
   if (onSale) return "sale";
   for (const key of [...tags, ...collections].map((v) => v.toLowerCase())) {
     const group = GROUP_TAGS[key];
     if (group) return group;
   }
+  if (["Sneakers", "Boots", "Sandals & slides"].includes(productType)) return "shoes";
+  if (["Bags", "Hats", "Belts", "Sunglasses", "Scarves"].includes(productType)) return "accessories";
   return "clothing";
 }
 
@@ -102,7 +108,12 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
 
   const collections = he.collections.edges.map((e) => e.node.handle);
   const categoryTag = he.tags.find((tag) => tag.toLowerCase().startsWith(CATEGORY_TAG_PREFIX));
-  const merchandisingCategory = categoryTag?.slice(CATEGORY_TAG_PREFIX.length);
+  const taggedCategory = categoryTag?.slice(CATEGORY_TAG_PREFIX.length);
+  const merchandisingCategory = MERCHANDISING_CATEGORIES.some(
+    (category) => category.slug === taggedCategory && category.type === he.productType
+  )
+    ? taggedCategory
+    : undefined;
 
   // Group the Shopify variant matrix by colour. This preserves inventory for
   // every size/colour pair instead of treating the first colour as the product.
@@ -164,8 +175,14 @@ export function toProduct(he: ShopifyProduct, en: ShopifyProduct): Product {
       en: en.description.split("\n").filter(Boolean),
     },
     brand: slugify(he.vendor || "nino"),
-    category: slugify(merchandisingCategory || he.productType || collections[0] || "clothing"),
-    group: toGroup(he.tags, collections, onSale),
+    category: slugify(
+      merchandisingCategory ||
+        DEFAULT_CATEGORY_BY_PRODUCT_TYPE[he.productType] ||
+        he.productType ||
+        collections[0] ||
+        "clothing"
+    ),
+    group: toGroup(he.tags, collections, onSale, he.productType),
     gender: toGender(he.tags),
     price,
     ...(onSale ? { compareAtPrice: compareAt } : {}),

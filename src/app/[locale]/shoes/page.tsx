@@ -8,6 +8,7 @@ import CollectionView, {
 import { isLocale } from "@/lib/i18n/config";
 
 const GROUP = "shoes" as const;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
