@@ -17,8 +17,6 @@ const SIZE_OPTIONS = ["size", "מידה"];
 const COLOR_OPTIONS = ["color", "colour", "צבע"];
 
 const GROUP_TAGS: Record<string, Category["group"]> = {
-  new: "new",
-  "new-in": "new",
   clothing: "clothing",
   shoes: "shoes",
   footwear: "shoes",
