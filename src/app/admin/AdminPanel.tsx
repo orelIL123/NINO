@@ -73,6 +73,7 @@ export default function AdminPanel({
   const [loginError, setLoginError] = useState("");
   const [loginBusy, setLoginBusy] = useState(false);
   const [productType, setProductType] = useState<ProductType>("T-shirts");
+  const [merchandisingCategory, setMerchandisingCategory] = useState("tshirts");
   const [sizes, setSizes] = useState(DEFAULT_SIZES.clothing);
   const [images, setImages] = useState<UploadedImage[]>([]);
   const imagesRef = useRef<UploadedImage[]>([]);
@@ -125,6 +126,9 @@ export default function AdminPanel({
     const previousGroup = groupForProductType(productType);
     const nextGroup = groupForProductType(next);
     setProductType(next);
+    setMerchandisingCategory(
+      MERCHANDISING_CATEGORIES.find((category) => category.type === next)?.slug ?? ""
+    );
     if (previousGroup !== nextGroup) setSizes(DEFAULT_SIZES[nextGroup]);
   }
 
@@ -250,6 +254,7 @@ export default function AdminPanel({
       images.forEach((image) => URL.revokeObjectURL(image.preview));
       setImages([]);
       setProductType("T-shirts");
+      setMerchandisingCategory("tshirts");
       setSizes(DEFAULT_SIZES.clothing);
       setProductsVersion((version) => version + 1);
     } catch (error) {
@@ -421,7 +426,13 @@ export default function AdminPanel({
               </label>
               <label>
                 <span className={labelClass}>קטגוריית אתר</span>
-                <select name="merchandisingCategory" className={inputClass} defaultValue="tshirts">
+                <select
+                  name="merchandisingCategory"
+                  className={inputClass}
+                  value={merchandisingCategory}
+                  onChange={(event) => setMerchandisingCategory(event.target.value)}
+                >
+                  <option value="">ללא תת־קטגוריה — אוטומטי</option>
                   {MERCHANDISING_CATEGORIES.map((category) => (
                     <option key={category.slug} value={category.slug}>{category.label}</option>
                   ))}
