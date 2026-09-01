@@ -228,7 +228,13 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const all = await getCategories();
-  return all.find((c) => c.slug === slug) ?? null;
+  // Known merchandising pages must remain reachable before their first live
+  // Shopify product exists. The empty state is a real page, never a 404.
+  return (
+    all.find((category) => category.slug === slug) ??
+    categories.find((category) => category.slug === slug) ??
+    null
+  );
 }
 
 /** Brands, extended with any Shopify vendor the demo catalog does not list. */

@@ -47,10 +47,16 @@ export function tilesFromProducts(
   }[],
   locale: Locale
 ): Tile[] {
+  const fallbackBySlug: Record<string, string> = {
+    tshirts: "/media/nino-clothing-fallback.webp",
+    outerwear: "/media/nino-clothing-fallback.webp",
+    sneakers: "/media/nino-shoes-fallback.webp",
+    bags: "/media/nino-accessories-fallback.webp",
+  };
   return entries.map((e) => ({
     label: e.label,
     href: localeHref(locale, e.href ?? `/category/${e.slug}`),
-    image: e.overrideImage ?? e.product?.images[0] ?? "/media/coming-soon.svg",
+    image: e.overrideImage ?? e.product?.images[0] ?? fallbackBySlug[e.slug] ?? "/media/coming-soon.svg",
     isEmpty: !e.overrideImage && !e.product,
   }));
 }

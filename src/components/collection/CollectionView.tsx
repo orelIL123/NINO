@@ -55,6 +55,15 @@ export default async function CollectionView({
     getProducts({ ...base, onSale: base.group === "sale" || undefined }),
   ]);
   const facets = await getFacets(all);
+  const emptyImage = base.group === "shoes"
+    ? "/media/nino-shoes-fallback.webp"
+    : base.group === "accessories"
+      ? "/media/nino-accessories-fallback.webp"
+      : base.category === "sneakers" || base.category === "boots" || base.category === "sandals"
+        ? "/media/nino-shoes-fallback.webp"
+        : base.category === "bags" || base.category === "hats" || base.category === "belts" || base.category === "sunglasses" || base.category === "scarves" || base.category === "perfumes"
+          ? "/media/nino-accessories-fallback.webp"
+          : "/media/nino-clothing-fallback.webp";
 
   return (
     <div className="container-nino py-8 md:py-10">
@@ -94,7 +103,7 @@ export default async function CollectionView({
 
       <Filters facets={facets} total={products.length}>
         {products.length === 0 ? (
-            <EmptyProducts locale={locale} />
+            <EmptyProducts locale={locale} image={emptyImage} />
         ) : (
           <ProductGrid
             products={products}

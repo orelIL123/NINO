@@ -180,6 +180,12 @@ export default function HomepageEditor() {
   const categories = sections.filter((section) => !["seasonal", "visit"].includes(section.key));
   const seasonal = sections.find((section) => section.key === "seasonal");
   const visit = sections.find((section) => section.key === "visit");
+  const fallbackImage = (key: HomepageSection["key"]) => {
+    if (key === "shoes") return "/media/nino-shoes-fallback.webp";
+    if (key === "accessories") return "/media/nino-accessories-fallback.webp";
+    if (key === "visit") return "/media/nino-store-fallback.webp";
+    return "/media/nino-clothing-fallback.webp";
+  };
 
   return (
     <section className="mt-14 border-t border-black/10 pt-12">
@@ -213,7 +219,7 @@ export default function HomepageEditor() {
                         <img src={image} alt="" className="h-full w-full object-cover" />
                       ) : (
                         <div className="relative h-full">
-                          <img src="/media/coming-soon.svg" alt="אין מוצרים עדיין — יתווספו פריטים בקרוב" className="h-full w-full object-cover opacity-70" />
+                          <img src={fallbackImage(section.key)} alt="אין מוצרים עדיין — יתווספו פריטים בקרוב" className="h-full w-full object-cover" />
                           <span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">יתווספו פריטים בקרוב</span>
                         </div>
                       )}
@@ -275,7 +281,7 @@ export default function HomepageEditor() {
                       />
                     ) : (
                       <div className="relative h-full">
-                        <img src="/media/coming-soon.svg" alt="אין תמונה — יתווספו פריטים בקרוב" className="h-full w-full object-cover opacity-70" />
+                        <img src={fallbackImage(seasonal.key)} alt="אין תמונה — יתווספו פריטים בקרוב" className="h-full w-full object-cover" />
                         <span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">תמונת ברירת מחדל</span>
                       </div>
                     )}
@@ -335,7 +341,7 @@ export default function HomepageEditor() {
                   {visit.collectionImage ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={visit.collectionImage} alt="" className="h-full w-full object-cover" />
-                  ) : <div className="relative h-full"><img src="/media/coming-soon.svg" alt="אין תמונה — יתווספו פריטים בקרוב" className="h-full w-full object-cover opacity-70" /><span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">תמונת ברירת מחדל</span></div>}
+                  ) : <div className="relative h-full"><img src={fallbackImage(visit.key)} alt="אין תמונה — יתווספו פריטים בקרוב" className="h-full w-full object-cover" /><span className="absolute inset-x-2 bottom-3 rounded-lg bg-white/90 px-2 py-1 text-center text-xs font-semibold">תמונת ברירת מחדל</span></div>}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <label className="cursor-pointer rounded-lg bg-black px-3 py-2 text-xs font-semibold text-white">{busyKey === visit.key ? "שומר…" : "העלאת תמונה"}<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busyKey === visit.key} onChange={(event) => { void upload(visit, event.target.files?.[0]); event.target.value = ""; }} /></label>
